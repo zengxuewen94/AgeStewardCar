@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_marginTop="@dimen/public_margin_20"
+		android:layout_marginLeft="@dimen/public_margin_20"
+		android:layout_marginRight="@dimen/public_margin_20">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="输入验证码："
+			android:textColor="@color/gray_text_color"
+			android:textSize="@dimen/sp_14" />
+
+		<com.age.steward.car.ui.custom.LineEditText
+			android:id="@+id/et_security_verification_content"
+			android:layout_width="match_parent"
+			android:layout_height="@dimen/login_button_height"
+			android:gravity="bottom"
+			android:paddingBottom="@dimen/dip_5"
+			android:includeFontPadding="false"
+			android:background="@null"
+			android:singleLine="true"
+			android:text=""
+			android:textColor="@color/hei_text_color"
+			android:textSize="@dimen/sp_14" />
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="10dp"
+			android:text="例如：http://192.168.1.1:8080"
+			android:textColor="@color/tab_gray_text_color"
+			android:textSize="@dimen/sp_13"
+			android:visibility="gone"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="@dimen/public_margin_40"
+		android:layout_marginLeft="@dimen/public_margin_20"
+		android:layout_marginRight="@dimen/public_margin_20">
+
+
+		<Button
+			android:id="@+id/btn_security_verification_save"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:layout_height="@dimen/login_button_height"
+			android:layout_margin="@dimen/public_margin_10"
+			android:layout_gravity="center_horizontal"
+			android:gravity="center"
+			android:background="@drawable/button_red_bg_selector"
+			android:text="确定"
+			android:textColor="@color/button_text_color"
+			android:textSize="@dimen/sp_14" />
+
+	</LinearLayout>
+
+</LinearLayout>

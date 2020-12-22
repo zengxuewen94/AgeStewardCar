@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color">
+
+
+    <RelativeLayout
+        android:id="@+id/rl_main_title"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/window_title_size"
+        android:background="@color/red_color">
+
+        <TextView
+            android:id="@+id/tv_main_title_left"
+            android:layout_width="40dip"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="扫描"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_14"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/iv_main_title_left"
+            android:layout_width="40dip"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/title_left_back"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_main_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:singleLine="true"
+            android:text="@string/app_name"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_16" />
+
+        <ImageView
+            android:id="@+id/iv_main_title_refresh"
+            android:layout_width="40dip"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="5dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/ic_refresh" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_main_activity_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/red_color"
+        android:orientation="horizontal">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_main_menu_list"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5" />
+
+        <RelativeLayout
+            android:id="@+id/rl_main_tab_me"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/textview_big_red_selector"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/iv_main_tab_me"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/main_tab_me_selector" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll_main_activity_tabs"
+        android:layout_below="@id/rl_main_title">
+
+        <com.age.steward.car.ui.custom.Html5WebView
+            android:id="@+id/wv_main_activity_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="-1dp" />
+
+        <include
+            layout="@layout/app_loaderror"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </RelativeLayout>
+</RelativeLayout>

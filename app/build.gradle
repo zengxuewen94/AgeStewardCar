@@ -1,0 +1,76 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+    defaultConfig {
+        applicationId "com.age.steward.car"
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        ndk{
+            abiFilters 'armeabi','x86','x86_64','armeabi_v7a','arm64_v8a'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions{
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+repositories {
+    flatDir {
+        dirs 'libs' //this way we can find the .aar file in libs folder
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.google.android.material:material:1.2.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation files('libs/httpmime-4.1.1.jar')
+    implementation files('libs/hutool-all-4.0.12.jar')
+    implementation 'q.rorbin:VerticalTabLayout:1.2.5'
+    implementation 'com.android.support:recyclerview-v7:29.0.0'
+    implementation 'com.android.support:design:29.0.0'
+    implementation files('libs/universal-image-loader-1.9.5.jar')
+    implementation 'com.google.zxing:core:3.3.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    //view依赖注入
+    implementation 'com.jakewharton:butterknife:10.2.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+    //网络请求okhttp3
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    //gson解析
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    //Retrofit2库
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    //rxjava2库
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    //日志的拦截器
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
+    //RxLifecycle基础库
+    implementation 'com.trello.rxlifecycle2:rxlifecycle-components:2.1.0'
+    implementation(name: 'library', ext: 'aar')
+
+    implementation files('libs/BaiduLBS_Android.jar')
+    implementation 'com.android.support:multidex:1.0.1'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    // 权限请求框架：https://github.com/getActivity/XXPermissions
+    implementation 'com.hjq:xxpermissions:9.2'
+}

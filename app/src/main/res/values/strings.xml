@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">QM办公助手</string>
+
+    <string name="quit">再按一次退出系统</string>
+    <string name="network_error">网络连接失败，请检查网络设置</string>
+    <string name="version">1.0.0.01</string>
+    <string name="loading">数据加载中...</string>
+    <string name="server_error">与服务器连接失败！</string>
+    <string name="load_error_msg">数据加载失败，请稍后再试!</string>
+    <string name="load_error_msg1">数据加载失败</string>
+    <string name="load_error_msg2">检查一下网络，请重新加载</string>
+    <string name="data_reload">重新加载</string>
+    <string name="camera">相机权限受限，请在设备设置中启用！</string>
+    <string name="external_storage">存储权限受限，请在设备设置中启用！</string>
+    <item name="tag_key_data" type="id" />
+    <item name="tag_key_position" type="id" />
+    <string name="error">错误</string>
+    <string name="no_nfc">设备不支持NFC功能</string>
+    <string name="nfc_disabled">NFC 未被开启，请去启用NFC选项.</string>
+    <string name="nfc">NFC</string>
+    <string name="nfc_reader">请读取NFC标签</string>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color">
+
+
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/mapView_map_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true" />
+    <EditText
+        android:id="@+id/et_map_activity_search"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="@dimen/sp_14"
+        android:layout_margin="@dimen/public_margin_10"
+        android:hint="请输入地点"
+        android:layout_marginBottom="@dimen/public_margin_20"/>
+    <LinearLayout
+        android:id="@+id/lt_map_activity_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/public_margin_10"
+        android:layout_marginRight="@dimen/public_margin_10"
+        android:layout_below="@id/et_map_activity_search"
+        android:visibility="gone">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_map_activity_poiList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</RelativeLayout>

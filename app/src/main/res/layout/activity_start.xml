@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color">
+    <LinearLayout
+        android:id="@+id/ll_activity_start_launcher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center" >
+
+        <ImageView
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@drawable/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginLeft="@dimen/public_margin_10"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textSize="@dimen/sp_24" />
+
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/iv_activity_start_welcome"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:layout_above="@id/ll_activity_start_launcher"
+        android:src="@drawable/splash"/>
+
+</RelativeLayout>

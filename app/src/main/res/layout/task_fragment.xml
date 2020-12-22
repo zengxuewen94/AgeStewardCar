@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/window_title_size"
+        android:background="@color/green_color">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="@dimen/sp_16"
+            android:textColor="@color/white"
+            android:text="护理任务"/>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/bg_color">
+
+            <LinearLayout
+                android:id="@+id/ll_fragment_task_daily"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/txt_fragment_task_daily"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/public_margin_10"
+                    android:layout_marginLeft="@dimen/public_margin_8"
+                    android:paddingLeft="@dimen/public_padding_5"
+                    android:layout_marginBottom="@dimen/public_margin_10"
+                    android:text="日常任务"
+                    android:textColor="@color/hei_text_color"
+                    android:textSize="@dimen/sp_14" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/divider_line_color"/>
+
+                <com.android.library.view.gridview.LineGridView
+                    android:id="@+id/gv_fragment_task_daily"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:listSelector="#00000000"
+                    android:scrollbars="none"
+                    android:numColumns="3"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_fragment_task_advice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:layout_marginTop="@dimen/public_margin_10">
+                <TextView
+                    android:id="@+id/txt_fragment_task_advice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/public_margin_10"
+                    android:layout_marginLeft="@dimen/public_margin_8"
+                    android:paddingLeft="@dimen/public_padding_5"
+                    android:layout_marginBottom="@dimen/public_margin_10"
+                    android:text="医嘱任务"
+                    android:textColor="@color/hei_text_color"
+                    android:textSize="@dimen/sp_14" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/divider_line_color"/>
+
+                <com.android.library.view.gridview.LineGridView
+                    android:id="@+id/gv_fragment_task_advice"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:listSelector="#00000000"
+                    android:scrollbars="none"
+                    android:numColumns="3"
+                    android:gravity="center" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_loaderror"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    android:padding="10dp" >
+
+    <LinearLayout
+        android:id="@+id/loaderror_linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:orientation="vertical" >
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            
+            android:gravity="center_horizontal"
+            android:src="@drawable/loaderror_img" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/loaderror_loaderror_msg1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/loaderror_linearLayout"
+        android:layout_marginTop="30dp"
+        android:gravity="center_horizontal"
+        android:text="@string/load_error_msg1"
+        android:textColor="@color/gray_text_color"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/loaderror_loaderror_msg2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/loaderror_loaderror_msg1"
+        android:layout_marginTop="15dip"
+        android:gravity="center_horizontal"
+        android:text="@string/load_error_msg2"
+        android:textColor="@color/tab_gray_text_color" />
+
+    <TextView
+        android:id="@+id/loaderror_btn_data_reload"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_below="@id/loaderror_loaderror_msg2"
+        android:layout_marginLeft="100dip"
+        android:layout_marginRight="100dip"
+        android:layout_marginTop="40dip"
+        android:background="@drawable/button_big_red_selector"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="@string/data_reload"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+</RelativeLayout>

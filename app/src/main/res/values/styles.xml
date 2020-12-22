@@ -1,0 +1,219 @@
+<resources>
+
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <style name="TranslucentTheme" parent="AppTheme">
+        <!--在Android 4.4之前的版本上运行，直接跟随系统主题-->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="Default.NoTitleBar.Fullscreen" parent="@style/Default.NoTitleBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="Default.NoTitleBar" parent="@style/Default">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Default" parent="@android:style/Theme.Black">
+        <item name="android:textColorPrimaryInverse">@android:color/black</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleSize">46.0dip</item>
+        <item name="android:windowTitleBackgroundStyle">@style/CustomWindowTitleBackground</item>
+        <item name="android:listViewStyle">@style/customListView</item>
+    </style>
+
+    <style name="customListView" parent="@android:style/Widget.ListView">
+        <item name="android:scrollingCache">false</item>
+        <item name="android:cacheColorHint">@null</item>
+    </style>
+
+    <style name="CustomWindowTitleBackground">
+        <item name="android:background">@android:color/black</item>
+    </style>
+
+    <style name="AppCustomTheme" parent="android:Theme.Light">
+        <item name="android:windowTitleSize">@dimen/window_title_size</item>
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTitleBackgroundStyle">@null</item>
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="AppCompatTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowNoTitle">true</item>
+        <!-- Customize your theme here. -->
+        <!--<item name="colorPrimary">@color/transparent</item>
+        <item name="colorPrimaryDark">@color/transparent</item>
+        <item name="colorAccent">@color/transparent</item>-->
+    </style>
+
+    <style name="dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@color/transparent</item>
+        <!-- 边框 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">false</item>
+        <!-- 半透明 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 无标题 -->
+        <item name="android:windowBackground">@color/transparent</item>
+        <!-- 自己想要的背景 -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 模糊 -->
+    </style>
+
+    <style name="NotificationContext" parent="android:TextAppearance.StatusBar.EventContent" />
+
+    <style name="NotificationTitle" parent="android:TextAppearance.StatusBar.EventContent.Title" />
+
+    <!-- 设置弹出窗口的属性，frame叠加，isfloat是否浮动，tarnslucent是否半透明，dim是背景是否变暗 -->
+    <style name="Theme_audioDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <!--设置Tablayout字体大小-->
+    <style name="TabLayoutTextSize">
+        <item name="android:textSize">@dimen/sp_14</item>
+    </style>
+
+    <style name="loadingDialogStyle" parent="android:Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item><!--设置dialog的背景-->
+        <item name="android:windowFrame">@null</item><!--Dialog的windowFrame框为无-->
+        <item name="android:windowNoTitle">true</item><!--是否显示title-->
+        <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">true</item><!--是否半透明-->
+        <item name="android:windowContentOverlay">@null</item><!--是否半透明-->
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog
+        </item><!-- 对话框是否有遮盖 -->
+        <item name="android:backgroundDimEnabled">false</item><!--背景是否模糊显示-->
+        <item name="android:backgroundDimAmount">0.6</item><!--背景的灰度-->
+    </style>
+
+    <declare-styleable name="TabLayout">
+        <attr name="tabIndicatorColor" format="color" />
+        <attr name="tabIndicatorHeight" format="dimension" />
+        <attr name="tabIndicatorWidth" format="dimension" />
+        <attr name="tabContentStart" format="dimension" />
+        <attr name="tabBackground" format="reference" />
+        <attr name="tabMode">
+            <enum name="scrollable" value="0" />
+            <enum name="fixed" value="1" />
+        </attr>
+        <attr name="tabGravity">
+            <enum name="fill" value="0" />
+            <enum name="center" value="1" />
+        </attr>
+        <attr name="tabViewNumber">
+            <enum name="one" value="1" />
+            <enum name="two" value="2" />
+            <enum name="three" value="3" />
+            <enum name="four" value="4" />
+            <enum name="five" value="5" />
+            <enum name="six" value="6" />
+
+        </attr>
+        <attr name="tabMinWidth" format="dimension" />
+        <attr name="tabMaxWidth" format="dimension" />
+        <attr name="tabTextAppearance" format="reference" />
+        <attr name="tabTextColor" format="color" />
+        <attr name="tabSelectedTextColor" format="color" />
+        <attr name="tabPaddingStart" format="dimension" />
+        <attr name="tabPaddingTop" format="dimension" />
+        <attr name="tabPaddingEnd" format="dimension" />
+        <attr name="tabPaddingBottom" format="dimension" />
+        <attr name="tabPadding" format="dimension" />
+    </declare-styleable>
+
+    <dimen name="design_tab_max_width">264dp</dimen>
+    <dimen name="design_tab_scrollable_min_width">72dp</dimen>
+    <dimen name="design_tab_text_size">14sp</dimen>
+    <dimen name="design_tab_text_size_2line">12sp</dimen>
+
+    <declare-styleable name="TabItem">
+        <attr name="android:text" />
+        <attr name="android:icon" />
+        <attr name="android:layout" />
+    </declare-styleable>
+
+    <style name="TabLayout" parent="android:Widget">
+        <item name="tabMaxWidth">@dimen/design_tab_max_width</item>
+        <item name="tabIndicatorColor">?attr/colorAccent</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">12dp</item>
+        <item name="tabPaddingEnd">12dp</item>
+        <item name="tabBackground">?attr/selectableItemBackground</item>
+        <item name="tabTextAppearance">@style/Tab_TextAppearance</item>
+        <item name="tabSelectedTextColor">?android:textColorPrimary</item>
+    </style>
+
+    <style name="Widget.Design.TabLayout" parent="TabLayout">
+        <item name="tabGravity">fill</item>
+        <item name="tabMode">fixed</item>
+    </style>
+
+    <style name="Tab_TextAppearance">
+        <item name="android:textSize">@dimen/design_tab_text_size</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
+    <style name="DialogAnimation" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/anim_dialog_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_dialog_out</item>
+    </style>
+
+    <style name="AnimBottom" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/push_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/push_bottom_out</item>
+    </style>
+    <!-- 自定义对话框风格 -->
+    <style name="commonTipDialogStyle" parent="android:Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <!--无边框 -->
+        <item name="android:windowNoTitle">true</item>
+        <!--没有标题-->
+        <item name="android:windowIsFloating">true</item>
+        <!--是否浮在activity之上-->
+        <item name="android:windowIsTranslucent">false</item>
+        <!--背景是否半透明-->
+        <item name="android:windowContentOverlay">@null</item>
+        <!--对话框是否有遮盖 -->
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <!--动画样式-->
+        <item name="android:backgroundDimEnabled">false</item>
+        <!--背景是否模糊-->
+
+    </style>
+
+    <style name="TransparentDialogStyle" parent="commonTipDialogStyle">
+
+        <!-- 是否浮在activity之上 -->
+        <item name="android:windowIsFloating">false</item>
+        <!-- 设置自定义布局的背景半透明 -->
+        <item name="android:background">#50000000</item>
+
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+    </style>
+
+    <style name="dialogWindowAnim" mce_bogus="1" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+</resources>

@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/public_margin_10"
+                android:layout_marginTop="@dimen/public_margin_10"
+                android:layout_marginRight="@dimen/public_margin_20"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:text="服务器设置"
+                    android:textColor="@color/hei_text_color"
+                    android:textSize="@dimen/sp_15" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="服务器地址："
+                    android:textColor="@color/gray_text_color"
+                    android:textSize="@dimen/sp_14" />
+
+                <com.age.steward.car.ui.custom.LineEditText
+                    android:id="@+id/et_server_setting_serverPath"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/login_button_height"
+                    android:background="@null"
+                    android:gravity="bottom"
+                    android:includeFontPadding="false"
+                    android:paddingBottom="@dimen/dip_5"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="@color/hei_text_color"
+                    android:textSize="@dimen/sp_14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="例如：http://192.168.1.1:8080"
+                    android:textColor="@color/tab_gray_text_color"
+                    android:textSize="@dimen/sp_13" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/public_margin_20"
+                android:layout_marginTop="@dimen/public_margin_40"
+                android:layout_marginRight="@dimen/public_margin_20"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_server_setting_test"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/login_button_height"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/public_margin_10"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_red_bg_selector"
+                    android:gravity="center"
+                    android:text="测试连接"
+                    android:textColor="@color/button_text_color"
+                    android:textSize="@dimen/sp_14"
+                    android:visibility="gone" />
+
+
+
+            </LinearLayout>
+
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:text="主题选择"
+                    android:textColor="@color/hei_text_color"
+                    android:textSize="@dimen/sp_15" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="@color/divider_line_color" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:id="@+id/rl_theme_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/img_theme_1"
+                                android:layout_width="108dp"
+                                android:layout_height="192dp"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="5dp"
+                                android:background="@color/red_color" />
+
+                            <CheckBox
+                                android:id="@+id/cb_theme_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignRight="@id/img_theme_1"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginRight="2dp"
+                                android:button="@drawable/theme_checkbox_selector"
+                                android:checked="true" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/rl_theme_1"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="10dp"
+                            android:text="主题1"
+                            android:textColor="@color/hei_text_color"
+                            android:textSize="@dimen/sp_14" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:id="@+id/rl_theme_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/img_theme_2"
+                                android:layout_width="108dp"
+                                android:layout_height="192dp"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="10dp"
+                                android:background="@color/gray_text_color" />
+
+                            <CheckBox
+                                android:id="@+id/cb_theme_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignRight="@id/img_theme_2"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginRight="2dp"
+                                android:button="@drawable/theme_checkbox_selector" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/rl_theme_2"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="10dp"
+                            android:text="主题2"
+                            android:textColor="@color/hei_text_color"
+                            android:textSize="@dimen/sp_14" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/divider_line_color" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:id="@+id/rl_theme_3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/img_theme_3"
+                                android:layout_width="108dp"
+                                android:layout_height="192dp"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="5dp"
+                                android:background="@color/blue_color" />
+
+                            <CheckBox
+                                android:id="@+id/cb_theme_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignRight="@id/img_theme_3"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginRight="2dp"
+                                android:button="@drawable/theme_checkbox_selector" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/rl_theme_3"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="10dp"
+                            android:text="主题3"
+                            android:textColor="@color/hei_text_color"
+                            android:textSize="@dimen/sp_14" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:id="@+id/rl_theme_4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:id="@+id/img_theme_4"
+                                android:layout_width="108dp"
+                                android:layout_height="192dp"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginRight="10dp"
+                                android:background="@color/yellow_color" />
+
+                            <CheckBox
+                                android:id="@+id/cb_theme_4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignRight="@id/img_theme_4"
+                                android:layout_marginTop="2dp"
+                                android:layout_marginRight="2dp"
+                                android:button="@drawable/theme_checkbox_selector" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/rl_theme_4"
+                            android:layout_centerHorizontal="true"
+                            android:layout_margin="10dp"
+                            android:text="主题4"
+                            android:textColor="@color/hei_text_color"
+                            android:textSize="@dimen/sp_14" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+            <Button
+                android:id="@+id/btn_server_setting_save"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_button_height"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/public_margin_10"
+                android:background="@drawable/button_red_bg_selector"
+                android:gravity="center"
+                android:text="保存"
+                android:textColor="@color/button_text_color"
+                android:textSize="@dimen/sp_14" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_button_height"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/public_margin_10"
+                android:gravity="center"
+                android:text="v 2020-11-30 C"
+                android:textColor="@color/gray_text_color"
+                android:textSize="@dimen/sp_14" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

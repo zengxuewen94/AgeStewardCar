@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/et_walking_activity_start"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="@dimen/sp_14"
+        android:layout_margin="@dimen/public_margin_10"
+        android:hint="起始点" />
+    <EditText
+        android:id="@+id/et_walking_activity_end"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="@dimen/sp_14"
+        android:layout_marginLeft="@dimen/public_margin_10"
+        android:layout_marginRight="@dimen/public_margin_10"
+        android:hint="终点"
+       />
+    </LinearLayout>
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/mapView_walking_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true" />
+
+</LinearLayout>

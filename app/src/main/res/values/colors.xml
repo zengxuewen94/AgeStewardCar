@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="black">#ff000000</color>
+    <color name="white">#ffFFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="half_transparent">#4D000000</color>
+    <!-- 界面背景色 -->
+    <color name="bg_color">#f7f7f7</color>
+    <!--红色提醒标签背景颜色-->
+    <color name="red_label_bg">#ff0000</color>
+
+    <!--黑色文字-->
+    <color name="hei_text_color">#333333</color>
+    <!--灰色文字-->
+    <color name="gray_text_color">#999999</color>
+    <!--主菜单文字-->
+    <color name="tab_gray_text_color">#cccccc</color>
+    <!--主体绿色-->
+    <color name="green_color">#0F282F</color>
+    <!--红色-->
+    <color name="red_color">#AC2525</color>
+    <!--紫色-->
+    <color name="purple_color">#b074d3</color>
+    <!--蓝色-->
+    <color name="blue_color">#389FD6</color>
+    <!--黄色-->
+    <color name="yellow_color">#FDD020</color>
+
+    <color name="dark_grey_color">#747474</color>
+
+    <!--透明度绿色-->
+    <color name="green_background_color">#0E272F</color>
+    <!--透明度红色-->
+    <color name="red_background_color">#AE2F2F</color>
+    <!--透明度紫色-->
+    <color name="purple_background_color">#99b074d3</color>
+    <!--透明度蓝色-->
+    <color name="blue_background_color">#349ED6</color>
+    <!--透明度灰色-->
+    <color name="gray_background_color">#99cccccc</color>
+    <!--透明度黄色-->
+    <color name="yellow_background_color">#FDCF1C</color>
+
+    <!--分割线颜色-->
+    <color name="divider_line_color">#e5e5e5</color>
+    <!--按钮描边色-->
+    <color name="login_button_stroke_color">#b7f9cc</color>
+
+</resources>

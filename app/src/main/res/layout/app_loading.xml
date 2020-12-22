@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_loading"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="visible" >
+
+    <ProgressBar
+        android:id="@+id/progress_loading"
+        android:layout_width="45.0dp"
+        android:layout_height="45.0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/dialog_style_xml_color"
+        android:visibility="visible" />
+
+</RelativeLayout>
