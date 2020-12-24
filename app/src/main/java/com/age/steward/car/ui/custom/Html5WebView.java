@@ -168,14 +168,16 @@ public class Html5WebView extends WebView {
 
         @Override
         public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-//            return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
+            //return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
             WebView newWebView = new WebView(view.getContext());
             newWebView.setWebViewClient(new WebViewClient() {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    context.startActivity(browserIntent);
+//                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//                    context.startActivity(browserIntent);
+                    loadUrl(url);
                     return true;
+
                 }
             });
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
