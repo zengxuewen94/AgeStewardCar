@@ -126,7 +126,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     private String mCameraImagePath;
     // 是否是Android 10以上手机
     private boolean isAndroidQ = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-
+    //This is Test Git Push
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
