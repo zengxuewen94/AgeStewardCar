@@ -1,14 +1,11 @@
 package com.age.steward.car.ui;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -25,19 +22,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.os.EnvironmentCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.age.steward.car.expand.ConstDataConfig;
-import com.age.steward.car.utils.PhotoUtils;
-import com.age.steward.car.utils.TimeUtil;
 import com.android.library.zxing.activity.CaptureActivity;
 import com.age.steward.car.AppConfig;
 import com.age.steward.car.AppContext;
@@ -55,16 +47,13 @@ import com.age.steward.car.utils.NetworkUtil;
 import com.age.steward.car.utils.StatusBarUtil;
 import com.age.steward.car.utils.StringUtils;
 import com.age.steward.car.utils.UIHelper;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;

@@ -168,20 +168,17 @@ public class Html5WebView extends WebView {
 
         @Override
         public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-            //return super.onCreateWindow(view, isDialog, isUserGesture, resultMsg);
-            WebView newWebView = new WebView(view.getContext());
-            newWebView.setWebViewClient(new WebViewClient() {
+            WebView web2 = new WebView(context);//新创建一个webview
+            web2.setWebViewClient(new WebViewClient(){
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-//                    context.startActivity(browserIntent);
-                    loadUrl(url);
+                    loadUrl(url);//将拦截到url交由第一个WebView打开
                     return true;
-
                 }
             });
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-            transport.setWebView(newWebView);
+            //以下的操作应该就是让新的webview去加载对应的url等操作。
+            transport.setWebView(web2);
             resultMsg.sendToTarget();
             return true;
         }

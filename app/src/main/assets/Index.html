@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
+<html> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=GBK"> 
+<title>Nfc Test</title> 
+<script type="text/javascript"> 
+	
+     
+     function nfcResult(info){
+        document.getElementById("shows").innerHTML = info;
+     }
+     function scanResult(info){
+        document.getElementById("shows").innerHTML = info;
+     }
+
+     function setActionButton(name, url){ 
+        androidObj.setActionButton(name, url);
+     }
+     
+     window.onload = function(){
+	setActionButton("QQ", "http://www.qq.com");
+
+     }
+
+     function callNFC(){ 
+        androidObj.callNFC();
+     }
+     
+    
+
+     function scan(str){ 
+        androidObj.scan(str);
+     }
+
+</script> 
+<%
+Response.charset = "gbk"
+%>
+</head> 
+<body>
+
+  <p><h2>web页面实现自定义app按钮</h2></p>
+  <p><button onclick='javascript:setActionButton("扫描", "http://www.youk.com");'>点击这里</button></p>
+  <p>1. 调用Android方法：function setActionButton(String name, String url);</p>
+  <p>2. 第一个参数name：表示按钮文字;</p>
+  <p>3. 第二个参数url：表示链接地址;</p> 
+
+  <p><h2>调用NFC</h2></p>
+  <p><button onclick='javascript:callNFC();'>点击这里</button></p>
+  <p>1. 调用Android方法：function callNFC();</p>
+
+  <p><h2>扫描二维码</h2></p>
+  <p><button onclick='javascript:scan("二维码/条形码扫描");'>点击这里</button></p>
+  <p>1. Android方法：function scan(String str);</p>
+  <p>2. 第一个参数name：表示按钮文字;</p>
+  <p>3. 第二个参数url：表示链接地址;</p>
+  <a href="" target="_blank">测试弹窗</a>
+<br>
+<textarea id= "shows"  cols="20" rows="10"> 暂无记录 </textarea>
+<br />
+</body> 
+</html>
