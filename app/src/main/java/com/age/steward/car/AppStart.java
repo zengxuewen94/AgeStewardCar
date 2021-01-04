@@ -34,7 +34,6 @@ public class AppStart extends Activity {
         ButterKnife.bind(this);
         getWidthAndHeight();
         loadWelcomeUrl(AppConfig.welcomeUrl(), imageView, view);
-        //redirectTo();
         StatusBarUtil.setTranslucentStatus(this);
         StatusBarUtil.setRootViewFitsSystemWindows(this, false);
     }
@@ -42,10 +41,7 @@ public class AppStart extends Activity {
 
     // 加载欢迎url
     public void loadWelcomeUrl(final String url, final ImageView iv, View view) {
-        Picasso.get().load(url)
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
-                .networkPolicy(NetworkPolicy.NO_CACHE)
-                .into(iv);
+
         //渐变展示启动屏
         AlphaAnimation aa = new AlphaAnimation(0.3f, 1.0f);
         aa.setDuration(5000);
@@ -62,6 +58,10 @@ public class AppStart extends Activity {
 
             @Override
             public void onAnimationStart(Animation animation) {
+                Picasso.get().load(url)
+                        .memoryPolicy(MemoryPolicy.NO_CACHE)
+                        .networkPolicy(NetworkPolicy.NO_CACHE)
+                        .into(iv);
             }
 
         });

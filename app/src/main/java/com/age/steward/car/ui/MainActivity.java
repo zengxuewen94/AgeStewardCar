@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -29,6 +30,7 @@ import androidx.core.content.FileProvider;
 import androidx.core.os.EnvironmentCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.age.steward.car.expand.ConstDataConfig;
 import com.android.library.zxing.activity.CaptureActivity;
 import com.age.steward.car.AppConfig;
@@ -47,13 +49,16 @@ import com.age.steward.car.utils.NetworkUtil;
 import com.age.steward.car.utils.StatusBarUtil;
 import com.age.steward.car.utils.StringUtils;
 import com.age.steward.car.utils.UIHelper;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -115,7 +120,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     private String mCameraImagePath;
     // 是否是Android 10以上手机
     private boolean isAndroidQ = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-    //This is Test Git Push
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,8 +166,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         mWebView.loadUrl(AppConfig.newsUrl());
         mWebView.setOnHtml5WebViewListener(this);
         mWebView.requestFocus(View.FOCUS_DOWN);
-
-
     }
 
     //设置标题的背景色
@@ -230,7 +233,10 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void openFileManager() {
+    /**
+     * 打开文件管理器
+     */
+    private void openFileManager() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");//设置类型，我这里是任意类型，可以过滤文件类型
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -281,14 +287,18 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     @Override
     protected void onResume() {
         super.onResume();
-        if (fncObject != null) fncObject.onResume();
+        if (fncObject != null) {
+            fncObject.onResume();
+        }
 
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (fncObject != null) fncObject.onPause();
+        if (fncObject != null) {
+            fncObject.onPause();
+        }
     }
 
 
@@ -296,7 +306,9 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        if (fncObject != null) fncObject.resolveIntent(intent);
+        if (fncObject != null) {
+            fncObject.resolveIntent(intent);
+        }
     }
 
     private void initData() {
@@ -386,16 +398,10 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                             }
                         }
                     });
-//            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//                // 申请权限
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CaptureActivity.REQ_PERM_CAMERA);
-//                return;
-//            }
         } else {
             Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
             startActivityForResult(intent, CaptureActivity.REQ_QR_CODE);
         }
-
 
     }
 
@@ -433,10 +439,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                             }
                         }
                     });
-//            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//                // 申请权限
-//                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CaptureActivity.REQ_PERM_CAMERA);
-//                return;
         } else {
             Bundle bundle = new Bundle();
             bundle.putSerializable("meMenuList", (Serializable) ConstDataConfig.initFile());
@@ -448,13 +450,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         fncObject = new FNCObject(getIntent(), MainActivity.this);
         fncObject.setOnFNCintf(this);
         fncObject.onResume();
-    }
-
-    private Bundle setBundleData(MenuBean menuBean, List<MenuBean> menuList) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("menuBean", menuBean);
-        bundle.putSerializable("meMenuList", (Serializable) menuList);
-        return bundle;
     }
 
 
@@ -734,7 +729,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     @Override
     public void onWebViewLoadError(String url) {
         showView(2);
-        //mWebView.setNeedClear(true);
     }
 
     @Override

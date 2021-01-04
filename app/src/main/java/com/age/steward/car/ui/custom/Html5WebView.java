@@ -32,6 +32,7 @@ import android.webkit.WebViewClient;
 import androidx.annotation.RequiresApi;
 
 import com.age.steward.car.R;
+import com.age.steward.car.ui.ChildWindowActivity;
 import com.age.steward.car.utils.Hint;
 import com.age.steward.car.utils.NetworkUtil;
 
@@ -172,7 +173,10 @@ public class Html5WebView extends WebView {
             web2.setWebViewClient(new WebViewClient(){
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    loadUrl(url);//将拦截到url交由第一个WebView打开
+//                    loadUrl(url);//将拦截到url交由第一个WebView打开
+                    Intent intent=new Intent(context, ChildWindowActivity.class);
+                    intent.putExtra("url",url);
+                    context.startActivity(intent);
                     return true;
                 }
             });
@@ -180,6 +184,7 @@ public class Html5WebView extends WebView {
             //以下的操作应该就是让新的webview去加载对应的url等操作。
             transport.setWebView(web2);
             resultMsg.sendToTarget();
+
             return true;
         }
 

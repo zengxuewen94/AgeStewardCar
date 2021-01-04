@@ -7,9 +7,9 @@ public class AppConfig {
 	private int deviceWidth = 0;
 	private int deviceHeight = 0;
 	//应用主地址
-	public static String mainHttpUrl ="http://3q1617t303.wicp.vip:80";
+	//public static String mainHttpUrl ="http://3q1617t303.wicp.vip:80";
 	//应用主地址
-//	public static String mainHttpUrl ="http://3q1617t303.wicp.vip:23115/appapi";
+	public static String mainHttpUrl ="http://3q1617t303.wicp.vip:23115/appapi";
 	//	//应用地址
 	private static String mainUrl(){ return mainHttpUrl;}
 	public static String mainListRemoteUrl(){return  mainUrl()+"/Menu/List.asp";}
