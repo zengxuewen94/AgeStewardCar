@@ -308,7 +308,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/public_margin_10"
                 android:gravity="center"
-                android:text="v 2020-11-30 C"
+                android:text="@string/version_updated"
                 android:textColor="@color/gray_text_color"
                 android:textSize="@dimen/sp_14" />
         </LinearLayout>

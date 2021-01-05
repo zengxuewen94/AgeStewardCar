@@ -1,6 +1,7 @@
 package com.age.steward.car.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -111,6 +112,7 @@ public class MapActivity extends RxAppCompatActivity {
 
 
 
+    @SuppressLint("WrongConstant")
     private void initView() {
         etSearch.addTextChangedListener(new ETSearchTextWatcher());
         mBaiduMap = mMapView.getMap();

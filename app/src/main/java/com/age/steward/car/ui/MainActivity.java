@@ -430,7 +430,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                         @Override
                         public void noPermission(List<String> denied, boolean never) {
                             if (never) {
-                                Hint.showShort(MainActivity.this, "被永久拒绝授权，请手动授予录相机权限");
+                                Hint.showShort(MainActivity.this, "被永久拒绝授权，请手动授予相机权限");
                                 // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                 XXPermissions.startPermissionActivity(MainActivity.this, denied);
                             } else {
@@ -488,19 +488,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                     setTopTitleBg();
                 case NewsCenter.MSG_APP_SERVER_SAVE://服务器保存
                     getMenuList(false);
-                    String oldUrl = mWebView.getUrl();
-                    String newUrl = AppConfig.newsUrl();
-                    if (newUrl.substring(newUrl.length() - 7, newUrl.length() - 1)
-                            .equals(oldUrl.substring(oldUrl.length() - 7, oldUrl.length() - 1))) {
-                        if (newUrl.equals(oldUrl)) {
-                            mWebView.reload();
-                        } else {
-                            mWebView.setNeedClear(true);
-                            mWebView.loadUrl(newUrl);
-                        }
-                    } else {
-                        mWebView.reload();
-                    }
+                    mWebView.loadUrl(AppConfig.newsUrl());
                     break;
                 case NewsCenter.MSG_APP_QR_CODE://二维码扫描
                     mAppQrCode = true;

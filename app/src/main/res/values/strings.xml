@@ -19,4 +19,5 @@
     <string name="nfc_disabled">NFC 未被开启，请去启用NFC选项.</string>
     <string name="nfc">NFC</string>
     <string name="nfc_reader">请读取NFC标签</string>
+    <string name="version_updated">v 2021-01-05 C</string>
 </resources>

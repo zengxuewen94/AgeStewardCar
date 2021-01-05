@@ -18,6 +18,7 @@ import com.age.steward.car.utils.Hint;
 import com.age.steward.car.utils.StringUtils;
 import com.age.steward.car.utils.UIHelper;
 import com.age.steward.car.utils.ViewUtil;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -71,7 +72,7 @@ public class SecurityVerificationActivity extends BasicActivity implements OnHtt
     public void onClick(View arg0) {
         String text = etText.getText().toString().trim();
         if (arg0.getId() == R.id.btn_security_verification_save) {
-            if (!StringUtils.isNull(text)&&ConstDataConfig.PASSWORD.equals(text)) {
+            if (!StringUtils.isNull(text) && ConstDataConfig.PASSWORD.equals(text)) {
                 ViewUtil.hideSoftInput(SecurityVerificationActivity.this);
                 Class<?> cls = ThemeSettingActivity.class;
                 Bundle bundle = getIntent().getBundleExtra("bundle");

@@ -65,8 +65,6 @@ public class AppContext extends MultiDexApplication {
 	public int getVersionCode() {
 		return versionCode;
 	}
-	public static ImageLoader imageLoader;
-	public static DisplayImageOptions imageOptions;
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -84,7 +82,6 @@ public class AppContext extends MultiDexApplication {
 		RHttp.Configure.get()
 				.baseUrl(AppConfig.mainHttpUrl)      //基础URL
 				.init(this);
-		initData();
 		getAppVersionCode();
 
 		//DataCenter.getInstance().init();
@@ -106,19 +103,7 @@ public class AppContext extends MultiDexApplication {
 		//包括BD09LL和GCJ02两种坐标，默认是BD09LL坐标。
 		SDKInitializer.setCoordType(CoordType.BD09LL);
 	}
-	private void initData() {
-		// 初始化图片加载对象
-		imageLoader = ImageLoader.getInstance();
-		imageLoader.init(ImageLoaderConfiguration.createDefault(this));
-		configDisplayImageOptions();
 
-	}// 初始化ImageOptions对象
-	private void configDisplayImageOptions() {
-		this.imageOptions = new DisplayImageOptions.Builder()
-				.showImageOnFail(R.drawable.splash)
-				.cacheInMemory(false).cacheOnDisk(false).considerExifParams(true)
-				.bitmapConfig(Bitmap.Config.RGB_565).build();
-	}
 	public static AppContext getInstance(){
 		if (mInstance == null) {
 			mInstance = new AppContext();

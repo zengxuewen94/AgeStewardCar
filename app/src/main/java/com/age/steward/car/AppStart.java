@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import com.age.steward.car.ui.MainActivity;
+import com.age.steward.car.ui.MapActivity;
 import com.age.steward.car.utils.StatusBarUtil;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.NetworkPolicy;
