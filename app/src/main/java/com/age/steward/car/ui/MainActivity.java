@@ -390,11 +390,11 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                         @Override
                         public void noPermission(List<String> denied, boolean never) {
                             if (never) {
-                                Hint.showShort(MainActivity.this, "被永久拒绝授权，请手动授予录相机权限");
+                                Hint.showShort(MainActivity.this, "被永久拒绝授权，请手动授予相机权限");
                                 // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                 XXPermissions.startPermissionActivity(MainActivity.this, denied);
                             } else {
-                                Hint.showShort(MainActivity.this, "获取相机权限失败权限失败");
+                                Hint.showShort(MainActivity.this, "获取相机权限失败");
                             }
                         }
                     });

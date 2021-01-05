@@ -61,6 +61,9 @@ import com.baidu.mapapi.search.route.RoutePlanSearch;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.utils.DistanceUtil;
+import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,10 +110,31 @@ public class MapActivity extends RxAppCompatActivity {
         setContentView(R.layout.map_activity);
         ButterKnife.bind(this);
         initView();
-        requestGPSPermission();
+        requestPermissions();
+
     }
 
+    private void requestPermissions(){
+        XXPermissions.with(this).permission(Permission.Group.LOCATION).request(new OnPermission() {
+            @Override
+            public void hasPermission(List<String> granted, boolean all) {
+                if (all){
+                    initLocationOption();
+                }
+            }
 
+            @Override
+            public void noPermission(List<String> denied, boolean never) {
+                if (never) {
+                    Hint.showShort(MapActivity.this, "被永久拒绝授权，请手动授予位置权限");
+                    // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                    XXPermissions.startPermissionActivity(MapActivity.this, denied);
+                } else {
+                    Hint.showShort(MapActivity.this, "获取位置权限失败");
+                }
+            }
+        });
+    }
 
     @SuppressLint("WrongConstant")
     private void initView() {
@@ -235,10 +259,10 @@ public class MapActivity extends RxAppCompatActivity {
 
         }
     };
+
     /**
      * 初始化定位参数配置
      */
-
     private void initLocationOption() {
         //定位服务的客户端。宿主程序在客户端声明此类，并调用，目前只支持在主线程中启动
         mLocationClient = new LocationClient(getApplicationContext());
@@ -296,7 +320,6 @@ public class MapActivity extends RxAppCompatActivity {
             //此处的BDLocation为定位结果信息类，通过它的各种get方法可获取定位相关的全部结果
             //以下只列举部分获取经纬度相关（常用）的结果信息
             //更多结果信息获取说明，请参照类参考中BDLocation类中的说明
-
             //获取纬度信息
             double latitude = location.getLatitude();
             //获取经度信息
@@ -431,40 +454,6 @@ public class MapActivity extends RxAppCompatActivity {
         }
     }
 
-    /**
-     * 请求存储权限
-     */
-    private void requestExternalPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                // 申请权限
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, ConstDataConfig.REQUEST_CODE_EXTERNAL_STORAGE);
-                return;
-            }
-        }
-
-    }
-
-    /**
-     * 请求存储权限
-     */
-    private void requestGPSPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    || checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        // 申请权限
-                        ActivityCompat.requestPermissions(MapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, ConstDataConfig.REQUEST_CODE_FINE_LOCATION);
-                        return;
-
-                    }
-                }, 1500);
-            }
-            initLocationOption();
-        }
-    }
 
     @Override
     protected void onResume() {
@@ -476,28 +465,6 @@ public class MapActivity extends RxAppCompatActivity {
     protected void onPause() {
         mMapView.onPause();
         super.onPause();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == ConstDataConfig.REQUEST_CODE_EXTERNAL_STORAGE) {
-            // 摄像头权限申请
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mMapView.onResume();
-            } else {
-                // 被禁止授权
-                Hint.showShort(this, R.string.external_storage);
-            }
-        } else if (requestCode == ConstDataConfig.REQUEST_CODE_FINE_LOCATION) {
-            // 摄像头权限申请
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                requestGPSPermission();
-            } else {
-                // 被禁止授权
-                Hint.showShort(this, R.string.external_storage);
-            }
-        }
     }
 
     @Override

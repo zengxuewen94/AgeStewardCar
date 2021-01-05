@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- 这个权限用于访问GPS定位-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <!-- 用于访问wifi网络信息，wifi信息会用于进行网络定位-->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- 获取运营商信息，用于支持提供运营商信息相关的接口-->
@@ -42,12 +43,12 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Black.NoTitleBar"
-        android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:usesCleartextTraffic="true">
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="e1HxZ6QGw5nI45nEavah1KHTrrQhohEf" />
@@ -91,8 +92,8 @@
         <activity
             android:name=".ui.ChildWindowActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppCompatTheme" />
         <activity
             android:name=".ui.SecurityVerificationActivity"
@@ -128,8 +129,7 @@
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.age.steward.car.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true"
-            >
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />

@@ -30,6 +30,10 @@ public class AppStart extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0){
+            finish();
+            return;
+        }
         view = View.inflate(this, R.layout.activity_start, null);
         setContentView(view);
         ButterKnife.bind(this);
@@ -73,7 +77,7 @@ public class AppStart extends Activity {
      * 跳转到...
      */
     private void redirectTo() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this,MainActivity.class);
         startActivity(intent);
         finish();
     }
