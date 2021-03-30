@@ -14,11 +14,7 @@ public class ConstDataConfig {
     public static final String SERVER_SETTING = "server";
     public static final String QR_CODE = "qrCode";
     public static final String NFC = "nfc";
-    public static final String MAIN_ACTIVITY = "mainActivity";
-    public static final String SERVER_SETTING_ACTIVITY = "serverSettingActivity";
-    public static final String SECURITY_VERIFICATION_ACTIVITY = "securityVerificationActivity";
     public static boolean isSelectFile = false;
-
     public static List<MenuBean> initFile() {
         List<MenuBean> meMenuList = new ArrayList<>();
         meMenuList.add(new MenuBean("1", "拍照", "1", THEME_SETTING));
@@ -33,4 +29,8 @@ public class ConstDataConfig {
     public static final int REQUEST_CODE_FINE_LOCATION = 0x03;
     //密码
     public static final String PASSWORD = "Abc.1234";
+
+    public final static int RESULT_CODE_CAMERA = 100;
+    public final static int RESULT_CODE_PHOTO = 101;
+    public final static int RESULT_CODE_FILE = 102;
 }

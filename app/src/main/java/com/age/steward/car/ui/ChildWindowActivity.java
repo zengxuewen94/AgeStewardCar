@@ -98,4 +98,9 @@ public class ChildWindowActivity extends AppCompatActivity implements Html5WebVi
     public void image(ValueCallback<Uri[]> filePathCallback) {
 
     }
+
+    @Override
+    public void onLoadNewWebView(boolean isLoad, Html5WebView html5WebView) {
+
+    }
 }

@@ -7,18 +7,18 @@ public class AppConfig {
 	private int deviceWidth = 0;
 	private int deviceHeight = 0;
 	//应用主地址
-	public static String mainHttpUrl ="http://3q1617t303.wicp.vip:80";
+	//public static String mainHttpUrl ="http://3q1617t303.wicp.vip:80";
 	//应用主地址
-//	public static String mainHttpUrl ="http://3q1617t303.wicp.vip:23115/appapi";
+	public static String mainHttpUrl ="http://3q1617t303.wicp.vip:80/appapi";
 	//	//应用地址
 	private static String mainUrl(){ return mainHttpUrl;}
 	public static String mainListRemoteUrl(){return  mainUrl()+"/Menu/List.asp";}
 	public static String indexRemoteUrl(){return  mainUrl()+"/Index.asp";}
 	public static String welcomeUrl() {return mainUrl()+"/Images/Welcome/splash.png";}
 	public static String autoRemoteUrl(){return mainUrl()+"/Auto.asp";}
-	public static String errorUrl(){return  "file:///android_asset/Error.html";}
-	public static String indexUrl(){return  "file:///android_asset/Index.html";}
     public static String newsUrl(){return mainUrl()+"/News/List.asp";}
+	public static String testUrl(){return  mainUrl()+"/1.html";}
+
 	private static AppConfig appConfig;
 	public static AppConfig getAppConfig() {
 		if (appConfig == null) {

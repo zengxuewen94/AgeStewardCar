@@ -2,36 +2,33 @@ package com.age.steward.car.ui;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
-import androidx.core.os.EnvironmentCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.age.steward.car.expand.ConstDataConfig;
+import com.age.steward.car.utils.PhotoUtils;
 import com.android.library.zxing.activity.CaptureActivity;
 import com.age.steward.car.AppConfig;
 import com.age.steward.car.AppContext;
@@ -49,25 +46,19 @@ import com.age.steward.car.utils.NetworkUtil;
 import com.age.steward.car.utils.StatusBarUtil;
 import com.age.steward.car.utils.StringUtils;
 import com.age.steward.car.utils.UIHelper;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 
@@ -98,22 +89,25 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     TextView tvReload;
     @BindView(R.id.ll_main_activity_tabs)
     LinearLayout llTab;
+    @BindView(R.id.fl_main_activity_content)
+    FrameLayout flContent;
+    private Html5WebView html5WebView;
     private MainMenuAdapter mainMenuAdapter;
-    private List<MenuBean> list = new ArrayList<>();
-    private FNCObject fncObject;
-    private boolean mDoubleClickExit = false;
-    private boolean mFirst = true;
-    private boolean mAppQrCode = false;//
-    private long firstExitTime = 0;
-    private int themeIndex = 0;
-    private int[] themeColors = AppData.THEME_COLORS;
-    private static final String TAG = MapActivity.class.getSimpleName();
-    private int clickCount = 0;//标题点击次数
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadCallbackAboveL;
-    private final static int RESULT_CODE_CAMERA = 100;
-    private final static int RESULT_CODE_PHOTO = 110;
-    private final static int RESULT_CODE_FILE = 102;
+    private FNCObject fncObject;
+    private List<MenuBean> list = new ArrayList<>();
+    private boolean mDoubleClickExit = false;
+    private boolean mFirst = true;
+    private boolean mAppQrCode = false;
+    private long firstExitTime = 0;
+    private static final String TAG = MapActivity.class.getSimpleName();
+    //主题下标
+    private int themeIndex = 0;
+    //标题点击次数
+    private int clickCount = 0;
+    //主题颜色数组
+    private int[] themeColors = AppData.THEME_COLORS;
     //用于保存拍照图片的uri
     private Uri mCameraUri;
     // 用于保存图片的文件路径，Android 10以下使用图片路径访问图片
@@ -129,7 +123,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         initView();
         setTopTitleBg();
         initData();
-        NewsCenter.getInstance().attachListener(listener);
+
     }
 
     private void initView() {
@@ -161,11 +155,46 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
 
 
     private void initWebView() {
-        //在js中调用本地java方
-        mWebView.addJavascriptInterface(new AppInterface(this), "androidObj");
-        mWebView.loadUrl(AppConfig.newsUrl());
+        //在js中调用本地java方法
+        mWebView.addJavascriptInterface(new AppInterface(), "androidObj");
+        mWebView.loadUrl(AppConfig.testUrl());
         mWebView.setOnHtml5WebViewListener(this);
         mWebView.requestFocus(View.FOCUS_DOWN);
+    }
+
+    private void initData() {
+        NewsCenter.getInstance().attachListener(listener);
+        String serverUrl = AppContext.getPreference("SERVER_URL");
+        if (StringUtils.isNull(serverUrl)) {
+            Hint.showShort(this, "请设置连接的服务器地址");
+            return;
+        }
+        AppConfig.setMainHttpUrl(serverUrl);
+        getMenuList(mFirst);
+        mFirst = false;
+    }
+
+
+    /**
+     * 获取菜单
+     *
+     * @param showDialog 是否显示弹窗
+     */
+    private void getMenuList(boolean showDialog) {
+        if (!NetworkUtil.isNetworkConnected(this)) {
+            Hint.showShort(this, R.string.network_error);
+            showView(2);
+            return;
+        }
+        String serverUrl = AppContext.getPreference("SERVER_URL");
+        if (StringUtils.isNull(serverUrl)) {
+            Hint.showShort(this, "请设置连接的服务器地址");
+            return;
+        }
+        AppRequest signRequest = AppRequest.getInstance(this, "menuList", this);
+        Map<String, Object> map = new HashMap<>();
+        signRequest.setOnSignRequest(this);
+        signRequest.getMenuList(map, showDialog);
     }
 
     //设置标题的背景色
@@ -202,17 +231,14 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         if (captureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
             Uri photoUri = null;
-
-            if (isAndroidQ) {
-                // 适配android 10
-                photoUri = createImageUri();
+            if (isAndroidQ) {// 适配android 10
+                photoUri = PhotoUtils.createImageUri(this);
             } else {
                 try {
-                    photoFile = createImageFile();
+                    photoFile = PhotoUtils.createImageFile(this);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
                 if (photoFile != null) {
                     mCameraImagePath = photoFile.getAbsolutePath();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -228,7 +254,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
             if (photoUri != null) {
                 captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 captureIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                startActivityForResult(captureIntent, RESULT_CODE_CAMERA);
+                startActivityForResult(captureIntent, ConstDataConfig.RESULT_CODE_CAMERA);
             }
         }
     }
@@ -240,47 +266,18 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");//设置类型，我这里是任意类型，可以过滤文件类型
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, RESULT_CODE_FILE);
-    }
-
-    /**
-     * 创建图片地址uri,用于保存拍照后的照片 Android 10以后使用这种方法
-     */
-    private Uri createImageUri() {
-        String status = Environment.getExternalStorageState();
-        // 判断是否有SD卡,优先使用SD卡存储,当没有SD卡时使用手机存储
-        if (status.equals(Environment.MEDIA_MOUNTED)) {
-            return getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
-        } else {
-            return getContentResolver().insert(MediaStore.Images.Media.INTERNAL_CONTENT_URI, new ContentValues());
-        }
-    }
-
-    /**
-     * 创建保存图片的文件
-     */
-    private File createImageFile() throws IOException {
-        String imageName = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        if (!storageDir.exists()) {
-            storageDir.mkdir();
-        }
-        File tempFile = new File(storageDir, imageName);
-        if (!Environment.MEDIA_MOUNTED.equals(EnvironmentCompat.getStorageState(tempFile))) {
-            return null;
-        }
-        return tempFile;
+        startActivityForResult(intent, ConstDataConfig.RESULT_CODE_FILE);
     }
 
 
     /**
-     * 选择图
+     * 选择图片
      */
     private void selectPhoto() {
         Intent albumIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         albumIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         albumIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-        startActivityForResult(albumIntent, RESULT_CODE_PHOTO);
+        startActivityForResult(albumIntent, ConstDataConfig.RESULT_CODE_PHOTO);
 
     }
 
@@ -311,44 +308,28 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void initData() {
-        String serverUrl = AppContext.getPreference("SERVER_URL");
-        if (StringUtils.isNull(serverUrl)) {
-            Hint.showShort(this, "请设置连接的服务器地址");
-            return;
-        }
-        AppConfig.setMainHttpUrl(serverUrl);
-        getMenuList(mFirst);
-        mWebView.loadUrl(AppConfig.newsUrl());
-        mFirst = false;
-    }
 
 
-    private void getMenuList(boolean showDialog) {
-        if (!NetworkUtil.isNetworkConnected(this)) {
-            Hint.showShort(this, R.string.network_error);
-            showView(2);
-            return;
-        }
-        String serverUrl = AppContext.getPreference("SERVER_URL");
-        if (StringUtils.isNull(serverUrl)) {
-            Hint.showShort(this, "请设置连接的服务器地址");
-            return;
-        }
-        AppRequest signRequest = AppRequest.getInstance(this, "menuList", this);
-        Map<String, Object> map = new HashMap<>();
-        signRequest.setOnSignRequest(this);
-        signRequest.getMenuList(map, showDialog);
-    }
-
-    private void mWebViewReload() {
+    /**
+     * WebView刷新
+     */
+    private void mWebViewReload(boolean isReload) {
         if (!NetworkUtil.isNetworkConnected(this)) {
             Hint.showShort(this, R.string.network_error);
             return;
         }
-        mWebView.reload();
+        if (isReload) {
+            mWebView.reload();
+        } else {
+            mWebView.loadUrl(tvLeft.getTag().toString());
+        }
     }
 
+    /**
+     * 视图显示
+     *
+     * @param state 显示状态
+     */
     private void showView(int state) {
         if (state == 1) {
             mWebView.setVisibility(View.VISIBLE);
@@ -359,14 +340,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         } else if (state == 3) {
             mWebView.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void mWebViewLoad() {
-        if (!NetworkUtil.isNetworkConnected(this)) {
-            Hint.showShort(this, R.string.network_error);
-            return;
-        }
-        mWebView.loadUrl(tvLeft.getTag().toString());
     }
 
     /**
@@ -567,9 +540,13 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.iv_main_title_left:
+            case R.id.iv_main_title_left://返回
                 if (mWebView.canGoBack()) {
                     mWebView.goBack();
+                } else if (html5WebView != null) {
+                    flContent.removeView(html5WebView);
+                    flContent.setVisibility(View.GONE);
+                    ivRefresh.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.tv_main_title:
@@ -590,7 +567,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                 break;
             case R.id.tv_main_title_left:
                 showView(1);
-                mWebViewLoad();
+                mWebViewReload(false);
                 break;
             case R.id.iv_main_title_refresh:
                 String serverUrl = AppContext.getPreference("SERVER_URL");
@@ -602,7 +579,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                     getMenuList(mFirst);
                     mWebView.loadUrl(AppConfig.newsUrl());
                 } else {
-                    mWebViewReload();
+                    mWebViewReload(true);
                 }
                 break;
             case R.id.rl_main_tab_me:
@@ -611,7 +588,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                 break;
             case R.id.loaderror_btn_data_reload:
                 getMenuList(true);
-                mWebViewReload();
+                mWebViewReload(true);
             default:
                 break;
 
@@ -642,22 +619,19 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
             assert data != null;
             Bundle bundle = data.getExtras();
             String scanResult = bundle.getString(CaptureActivity.INTENT_EXTRA_KEY_QR_SCAN);
-            Log.e("scanResult", scanResult.toString().trim());
-            String result = scanResult.toString().trim();
+            assert scanResult != null;
+            String result = scanResult.trim();
             mWebView.loadUrl("javascript:scanResult('" + result + "')");
             if (mAppQrCode) {
-                mWebView.evaluateJavascript("javascript:scanResult('" + result + "')", new ValueCallback<String>() {
-                    @Override
-                    public void onReceiveValue(String value) {
+                mWebView.evaluateJavascript("javascript:scanResult('" + result + "')", value -> {
 
-                    }
                 });
             }
-        } else if (requestCode == RESULT_CODE_CAMERA || requestCode == RESULT_CODE_PHOTO || requestCode == RESULT_CODE_FILE) {
+        } else if (requestCode == ConstDataConfig.RESULT_CODE_CAMERA || requestCode == ConstDataConfig.RESULT_CODE_PHOTO || requestCode == ConstDataConfig.RESULT_CODE_FILE) {
             if (null == mUploadMessage && null == mUploadCallbackAboveL) return;
             Uri result = data == null || resultCode != RESULT_OK ? null : data.getData();
             if (mUploadCallbackAboveL != null) {
-                onActivityResultAboveL(requestCode, resultCode, data);
+                onActivityResultAboveL(requestCode, data);
             } else if (mUploadMessage != null) {
                 mUploadMessage.onReceiveValue(result);
                 mUploadMessage = null;
@@ -665,19 +639,25 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         }
     }
 
+    /**
+     * 文件选择回调
+     *
+     * @param requestCode
+     * @param data
+     */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void onActivityResultAboveL(int requestCode, int resultCode, Intent data) {
-        if ((requestCode != RESULT_CODE_CAMERA && requestCode != RESULT_CODE_PHOTO && requestCode != RESULT_CODE_FILE) || mUploadCallbackAboveL == null) {
+    private void onActivityResultAboveL(int requestCode, Intent data) {
+        if ((requestCode != ConstDataConfig.RESULT_CODE_CAMERA && requestCode != ConstDataConfig.RESULT_CODE_PHOTO && requestCode != ConstDataConfig.RESULT_CODE_FILE) || mUploadCallbackAboveL == null) {
             return;
         }
-        Uri[] results = null;
-        if (requestCode == RESULT_CODE_CAMERA) {
+        Uri[] results ;
+        if (requestCode == ConstDataConfig.RESULT_CODE_CAMERA) {
             if (isAndroidQ) {
                 results = new Uri[]{mCameraUri};
             } else {
                 results = new Uri[]{Uri.parse(mCameraImagePath)};
             }
-        } else if (requestCode == RESULT_CODE_PHOTO || requestCode == RESULT_CODE_FILE) {
+        } else {
             if (data == null) {
                 results = null;
             } else {
@@ -731,17 +711,46 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
 
     }
 
+    @Override
+    public void onLoadNewWebView(boolean isLoad, Html5WebView html5WebView) {
+        this.html5WebView = html5WebView;
+        if (isLoad) {
+            flContent.addView(html5WebView);
+            flContent.setVisibility(View.VISIBLE);
+            tvLeft.setVisibility(View.GONE);
+            ivRefresh.setVisibility(View.GONE);
+            ivLeft.setVisibility(View.VISIBLE);
+            html5WebView.setOnHtml5WebView(this, html5WebView);
+        } else {
+            flContent.removeView(html5WebView);
+            flContent.setVisibility(View.GONE);
+            ivRefresh.setVisibility(View.VISIBLE);
+            if (!TextUtils.isEmpty(tvLeft.getText().toString().trim())) {
+                ivLeft.setVisibility(View.GONE);
+                tvLeft.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        if (mWebView != null) {
+            mWebView.stopLoading();
+            mWebView.clearHistory();
+            mWebView.clearCache(true);
+            mWebView.loadUrl("about:blank");
+            mWebView.pauseTimers();
+            mWebView = null;
+        }
+        NewsCenter.getInstance().detachListener(listener);
+        super.onDestroy();
+    }
 
     /**
      * Android与JS通信的接口
      */
     class AppInterface {
-
-        private Context mContext;
-
-        AppInterface(Context mContext) {
-            this.mContext = mContext;
-        }
 
         /**
          * 左上角按钮文字和定向url
@@ -758,10 +767,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
             msg.what = 200;
             msg.setData(bundle);
             mHandler.sendMessage(msg);
-        }
-
-        public void loadUrl(String url) {
-            mWebView.loadUrl(url);
         }
 
         /**
@@ -783,20 +788,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
             initNfc();
         }
 
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (mWebView != null) {
-            mWebView.stopLoading();
-            mWebView.clearHistory();
-            mWebView.clearCache(true);
-            mWebView.loadUrl("about:blank");
-            mWebView.pauseTimers();
-            mWebView = null;
-        }
-        NewsCenter.getInstance().detachListener(listener);
-        super.onDestroy();
     }
 
 }

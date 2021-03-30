@@ -20,7 +20,7 @@
             android:gravity="center"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:text="扫描"
+            android:text=""
             android:textColor="@color/white"
             android:textSize="@dimen/sp_14"
             android:visibility="gone" />
@@ -106,7 +106,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="-1dp" />
-
+        <FrameLayout
+            android:id="@+id/fl_main_activity_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="-1dp" />
         <include
             layout="@layout/app_loaderror"
             android:layout_width="match_parent"

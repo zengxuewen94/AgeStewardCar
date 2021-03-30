@@ -11,11 +11,9 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import com.age.steward.car.ui.MainActivity;
-import com.age.steward.car.ui.MapActivity;
 import com.age.steward.car.utils.StatusBarUtil;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -63,10 +61,13 @@ public class AppStart extends Activity {
 
             @Override
             public void onAnimationStart(Animation animation) {
-                Picasso.get().load(url)
-                        .memoryPolicy(MemoryPolicy.NO_CACHE)
-                        .networkPolicy(NetworkPolicy.NO_CACHE)
-                        .into(iv);
+                Glide.with(AppStart.this).asDrawable()
+                        .dontAnimate()
+                        .placeholder(imageView.getDrawable())//设置占位图为当前的ImageView的Drawable
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)//不缓存资源
+                        .skipMemoryCache(true)//禁止Glide内存缓存
+                        .load(url)
+                        .into(imageView);
             }
 
         });

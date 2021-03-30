@@ -130,6 +130,7 @@ public class Html5WebView extends WebView {
 
     private class MyWebChromeClient extends WebChromeClient {
 
+
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
             if (newProgress == 100) {
@@ -164,27 +165,17 @@ public class Html5WebView extends WebView {
 
         @Override
         public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+
             return super.onConsoleMessage(consoleMessage);
         }
 
         @Override
         public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-            WebView web2 = new WebView(context);//新创建一个webview
-            web2.setWebViewClient(new WebViewClient(){
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                    loadUrl(url);//将拦截到url交由第一个WebView打开
-                    Intent intent=new Intent(context, ChildWindowActivity.class);
-                    intent.putExtra("url",url);
-                    context.startActivity(intent);
-                    return true;
-                }
-            });
+            newWebView = new Html5WebView(view.getContext());
+            webViewListener.onLoadNewWebView(true, newWebView);
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-            //以下的操作应该就是让新的webview去加载对应的url等操作。
-            transport.setWebView(web2);
+            transport.setWebView(newWebView);
             resultMsg.sendToTarget();
-
             return true;
         }
 
@@ -205,7 +196,11 @@ public class Html5WebView extends WebView {
 
         @Override
         public void onCloseWindow(WebView window) {
+            if (webViewListener != null && newWebView != null) {
+                webViewListener.onLoadNewWebView(false, newWebView);
+            }
             super.onCloseWindow(window);
+
         }
 
         @Override
@@ -389,6 +384,8 @@ public class Html5WebView extends WebView {
         void onStartLoad();
 
         void image(ValueCallback<Uri[]> filePathCallback);
+
+        void onLoadNewWebView(boolean isLoad, Html5WebView html5WebView);
     }
 
     private OnHtml5WebViewListener webViewListener;
@@ -396,8 +393,13 @@ public class Html5WebView extends WebView {
     public void setOnHtml5WebViewListener(OnHtml5WebViewListener webViewListener) {
         this.webViewListener = webViewListener;
     }
+    private Html5WebView newWebView;
 
 
+    public void setOnHtml5WebView(OnHtml5WebViewListener webViewListener,Html5WebView html5WebView) {
+        this.webViewListener = webViewListener;
+        this.newWebView=html5WebView;
+    }
     public void setNeedClear(boolean needClear) {
         this.needClear = needClear;
     }
