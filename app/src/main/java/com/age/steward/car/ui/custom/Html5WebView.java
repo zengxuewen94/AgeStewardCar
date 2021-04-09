@@ -128,7 +128,7 @@ public class Html5WebView extends WebView {
     }
 
 
-    private class MyWebChromeClient extends WebChromeClient {
+    public class MyWebChromeClient extends WebChromeClient {
 
 
         @Override
@@ -171,7 +171,7 @@ public class Html5WebView extends WebView {
 
         @Override
         public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-            newWebView = new Html5WebView(view.getContext());
+            newWebView = new Html5WebView(getContext());
             webViewListener.onLoadNewWebView(true, newWebView);
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
             transport.setWebView(newWebView);
@@ -196,9 +196,6 @@ public class Html5WebView extends WebView {
 
         @Override
         public void onCloseWindow(WebView window) {
-            if (webViewListener != null && newWebView != null) {
-                webViewListener.onLoadNewWebView(false, newWebView);
-            }
             super.onCloseWindow(window);
 
         }
@@ -400,7 +397,9 @@ public class Html5WebView extends WebView {
         this.webViewListener = webViewListener;
         this.newWebView=html5WebView;
     }
-    public void setNeedClear(boolean needClear) {
-        this.needClear = needClear;
+
+    public void onCloseWindow() {
+        MyWebChromeClient myWebChromeClient=new MyWebChromeClient();
+        myWebChromeClient.onCloseWindow(this);
     }
 }

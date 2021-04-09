@@ -16,17 +16,21 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.age.steward.car.expand.ConstDataConfig;
 import com.age.steward.car.utils.PhotoUtils;
 import com.android.library.zxing.activity.CaptureActivity;
@@ -46,13 +50,16 @@ import com.age.steward.car.utils.NetworkUtil;
 import com.age.steward.car.utils.StatusBarUtil;
 import com.age.steward.car.utils.StringUtils;
 import com.age.steward.car.utils.UIHelper;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -309,7 +316,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     }
 
 
-
     /**
      * WebView刷新
      */
@@ -541,12 +547,10 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_main_title_left://返回
-                if (mWebView.canGoBack()) {
+                if (html5WebView != null && flContent != null && flContent.getVisibility() == View.VISIBLE) {
+                    flContent.removeAllViews();
+                } else if (mWebView.canGoBack()) {
                     mWebView.goBack();
-                } else if (html5WebView != null) {
-                    flContent.removeView(html5WebView);
-                    flContent.setVisibility(View.GONE);
-                    ivRefresh.setVisibility(View.VISIBLE);
                 }
                 break;
             case R.id.tv_main_title:
@@ -598,14 +602,13 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                if (mWebView.canGoBack()) {
-                    mWebView.goBack();
-                    return true;
-                } else {
-                    return false;
-                }
+            if (mWebView.canGoBack()) {
+                mWebView.goBack();
+                return true;
+            } else {
+                return false;
             }
+
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -650,7 +653,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         if ((requestCode != ConstDataConfig.RESULT_CODE_CAMERA && requestCode != ConstDataConfig.RESULT_CODE_PHOTO && requestCode != ConstDataConfig.RESULT_CODE_FILE) || mUploadCallbackAboveL == null) {
             return;
         }
-        Uri[] results ;
+        Uri[] results;
         if (requestCode == ConstDataConfig.RESULT_CODE_CAMERA) {
             if (isAndroidQ) {
                 results = new Uri[]{mCameraUri};
@@ -715,14 +718,22 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     public void onLoadNewWebView(boolean isLoad, Html5WebView html5WebView) {
         this.html5WebView = html5WebView;
         if (isLoad) {
+            html5WebView.setWebChromeClient(new WebChromeClient(){
+                @Override
+                public void onCloseWindow(WebView window) {
+                    flContent.removeView(html5WebView);
+                    super.onCloseWindow(window);
+                }
+                @Override
+                public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                    return true;
+                }
+            });
             flContent.addView(html5WebView);
-            flContent.setVisibility(View.VISIBLE);
             tvLeft.setVisibility(View.GONE);
             ivRefresh.setVisibility(View.GONE);
             ivLeft.setVisibility(View.VISIBLE);
-            html5WebView.setOnHtml5WebView(this, html5WebView);
         } else {
-            flContent.removeView(html5WebView);
             flContent.setVisibility(View.GONE);
             ivRefresh.setVisibility(View.VISIBLE);
             if (!TextUtils.isEmpty(tvLeft.getText().toString().trim())) {
@@ -730,6 +741,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                 tvLeft.setVisibility(View.VISIBLE);
             }
         }
+        html5WebView.setOnHtml5WebView(this, this.html5WebView);
     }
 
 
