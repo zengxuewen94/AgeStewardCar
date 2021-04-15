@@ -171,7 +171,7 @@ public class Html5WebView extends WebView {
 
         @Override
         public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-            newWebView = new Html5WebView(getContext());
+            Html5WebView newWebView = new Html5WebView(getContext());
             webViewListener.onLoadNewWebView(true, newWebView);
             WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
             transport.setWebView(newWebView);
@@ -197,7 +197,6 @@ public class Html5WebView extends WebView {
         @Override
         public void onCloseWindow(WebView window) {
             super.onCloseWindow(window);
-
         }
 
         @Override
@@ -393,13 +392,4 @@ public class Html5WebView extends WebView {
     private Html5WebView newWebView;
 
 
-    public void setOnHtml5WebView(OnHtml5WebViewListener webViewListener,Html5WebView html5WebView) {
-        this.webViewListener = webViewListener;
-        this.newWebView=html5WebView;
-    }
-
-    public void onCloseWindow() {
-        MyWebChromeClient myWebChromeClient=new MyWebChromeClient();
-        myWebChromeClient.onCloseWindow(this);
-    }
 }

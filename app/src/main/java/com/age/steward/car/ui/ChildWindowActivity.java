@@ -45,14 +45,12 @@ public class ChildWindowActivity extends AppCompatActivity implements Html5WebVi
         ButterKnife.bind(this);
         initView();
         setTopTitleBg();
-        initData();
     }
 
 
     private void initView() {
         initWebView();
         ivLeftBack.setOnClickListener(v -> finish());
-        ivRightRefresh.setOnClickListener(v -> mWebView.reload());
 
     }
 
@@ -79,10 +77,6 @@ public class ChildWindowActivity extends AppCompatActivity implements Html5WebVi
         mWebView.requestFocus(View.FOCUS_DOWN);
     }
 
-    private void initData() {
-        String url = getIntent().getStringExtra("url");
-        mWebView.loadUrl(url);
-    }
 
     @Override
     public void onWebViewLoadError(String url) {

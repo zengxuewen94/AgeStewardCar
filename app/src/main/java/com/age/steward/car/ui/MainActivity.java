@@ -164,7 +164,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     private void initWebView() {
         //在js中调用本地java方法
         mWebView.addJavascriptInterface(new AppInterface(), "androidObj");
-        mWebView.loadUrl(AppConfig.testUrl());
+        mWebView.loadUrl(AppConfig.newsUrl());
         mWebView.setOnHtml5WebViewListener(this);
         mWebView.requestFocus(View.FOCUS_DOWN);
     }
@@ -178,6 +178,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         }
         AppConfig.setMainHttpUrl(serverUrl);
         getMenuList(mFirst);
+        mWebView.loadUrl(AppConfig.newsUrl());
         mFirst = false;
     }
 
@@ -540,6 +541,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @OnClick({R.id.tv_main_title_left, R.id.iv_main_title_refresh
             , R.id.iv_main_title_left, R.id.rl_main_tab_me
             , R.id.loaderror_btn_data_reload, R.id.tv_main_title})
@@ -548,7 +550,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         switch (v.getId()) {
             case R.id.iv_main_title_left://返回
                 if (html5WebView != null && flContent != null && flContent.getVisibility() == View.VISIBLE) {
-                    flContent.removeAllViews();
+                    html5WebView.getWebChromeClient().onCloseWindow(html5WebView);
                 } else if (mWebView.canGoBack()) {
                     mWebView.goBack();
                 }
@@ -602,7 +604,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (mWebView.canGoBack()) {
+            if (flContent.getVisibility() != View.VISIBLE && mWebView.canGoBack()) {
                 mWebView.goBack();
                 return true;
             } else {
@@ -655,11 +657,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         }
         Uri[] results;
         if (requestCode == ConstDataConfig.RESULT_CODE_CAMERA) {
-            if (isAndroidQ) {
-                results = new Uri[]{mCameraUri};
-            } else {
-                results = new Uri[]{Uri.parse(mCameraImagePath)};
-            }
+            results = new Uri[]{mCameraUri};
         } else {
             if (data == null) {
                 results = null;
@@ -714,34 +712,30 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onLoadNewWebView(boolean isLoad, Html5WebView html5WebView) {
         this.html5WebView = html5WebView;
-        if (isLoad) {
-            html5WebView.setWebChromeClient(new WebChromeClient(){
-                @Override
-                public void onCloseWindow(WebView window) {
-                    flContent.removeView(html5WebView);
-                    super.onCloseWindow(window);
+        html5WebView.getWebChromeClient().onProgressChanged(html5WebView,100);
+        html5WebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onCloseWindow(WebView window) {
+                flContent.removeAllViews();
+                flContent.setVisibility(View.GONE);
+                ivRefresh.setVisibility(View.VISIBLE);
+                if (!TextUtils.isEmpty(tvLeft.getText().toString().trim())) {
+                    ivLeft.setVisibility(View.GONE);
+                    tvLeft.setVisibility(View.VISIBLE);
                 }
-                @Override
-                public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-                    return true;
-                }
-            });
-            flContent.addView(html5WebView);
-            tvLeft.setVisibility(View.GONE);
-            ivRefresh.setVisibility(View.GONE);
-            ivLeft.setVisibility(View.VISIBLE);
-        } else {
-            flContent.setVisibility(View.GONE);
-            ivRefresh.setVisibility(View.VISIBLE);
-            if (!TextUtils.isEmpty(tvLeft.getText().toString().trim())) {
-                ivLeft.setVisibility(View.GONE);
-                tvLeft.setVisibility(View.VISIBLE);
+                super.onCloseWindow(window);
             }
-        }
-        html5WebView.setOnHtml5WebView(this, this.html5WebView);
+        });
+        flContent.removeAllViews();
+        flContent.addView(html5WebView);
+        flContent.setVisibility(View.VISIBLE);
+        ivRefresh.setVisibility(View.GONE);
+        tvLeft.setVisibility(View.GONE);
+        ivLeft.setVisibility(View.GONE);
     }
 
 

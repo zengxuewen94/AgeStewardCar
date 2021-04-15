@@ -41,7 +41,8 @@
             android:layout_marginEnd="5dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:src="@drawable/ic_refresh" />
+            android:src="@drawable/ic_refresh"
+            android:visibility="gone"/>
 
 
     </RelativeLayout>
@@ -55,12 +56,6 @@
             android:id="@+id/wv_child_window"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-        <include
-            layout="@layout/app_loaderror"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
     </RelativeLayout>
 
 

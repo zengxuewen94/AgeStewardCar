@@ -50,7 +50,7 @@ public class PhotoUtils {
                 activity.startActivityForResult(intent, requestCode);
             } catch (Exception e) {
                 Toast.makeText(activity, "执行失败", Toast.LENGTH_SHORT).show();
-                Log.e("Exception","Exception:"+e.getMessage());
+                Log.e("Exception", "Exception:" + e.getMessage());
             }
         } else {
             Toast.makeText(activity, "存储卡不可用", Toast.LENGTH_SHORT).show();
@@ -314,6 +314,7 @@ public class PhotoUtils {
      */
     public static File createImageFile(Context context) throws IOException {
         String imageName = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        imageName += ".jpg";
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         if (!storageDir.exists()) {
             storageDir.mkdir();
