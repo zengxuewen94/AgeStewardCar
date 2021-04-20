@@ -63,6 +63,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,10 +118,9 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     private int[] themeColors = AppData.THEME_COLORS;
     //用于保存拍照图片的uri
     private Uri mCameraUri;
-    // 用于保存图片的文件路径，Android 10以下使用图片路径访问图片
-    private String mCameraImagePath;
     // 是否是Android 10以上手机
     private boolean isAndroidQ = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+    private MyHandler myHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,21 +164,22 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     private void initWebView() {
         //在js中调用本地java方法
         mWebView.addJavascriptInterface(new AppInterface(), "androidObj");
-        mWebView.loadUrl(AppConfig.newsUrl());
         mWebView.setOnHtml5WebViewListener(this);
         mWebView.requestFocus(View.FOCUS_DOWN);
     }
 
     private void initData() {
+        myHandler = new MyHandler(MainActivity.this);
         NewsCenter.getInstance().attachListener(listener);
         String serverUrl = AppContext.getPreference("SERVER_URL");
         if (StringUtils.isNull(serverUrl)) {
             Hint.showShort(this, "请设置连接的服务器地址");
+            showView(2);
             return;
         }
         AppConfig.setMainHttpUrl(serverUrl);
-        getMenuList(mFirst);
         mWebView.loadUrl(AppConfig.newsUrl());
+        getMenuList(mFirst);
         mFirst = false;
     }
 
@@ -229,6 +230,14 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                 themeColors[themeIndex]));
     }
 
+    /**
+     * 初始化NFC
+     */
+    private void initNfc() {
+        fncObject = new FNCObject(getIntent(), MainActivity.this);
+        fncObject.setOnFNCintf(this);
+        fncObject.onResume();
+    }
 
     /**
      * 调起相机拍照
@@ -248,7 +257,6 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
                     e.printStackTrace();
                 }
                 if (photoFile != null) {
-                    mCameraImagePath = photoFile.getAbsolutePath();
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         //适配Android 7.0文件权限，通过FileProvider创建一个content类型的Uri
                         photoUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", photoFile);
@@ -286,36 +294,43 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         albumIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         albumIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
         startActivityForResult(albumIntent, ConstDataConfig.RESULT_CODE_PHOTO);
-
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (fncObject != null) {
-            fncObject.onResume();
-        }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (fncObject != null) {
-            fncObject.onPause();
-        }
-    }
-
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        if (fncObject != null) {
-            fncObject.resolveIntent(intent);
+    /**
+     * 左上角文字按钮自定义
+     *
+     * @param bundle
+     */
+    private void onSetTopLeft(Bundle bundle) {
+        String name = bundle.getString("name");
+        String url = bundle.getString("url");
+        tvLeft.setText(name);
+        tvLeft.setTag(url);
+        if (!StringUtils.isNull(name) && !StringUtils.isNull(url)) {
+            tvLeft.setVisibility(View.VISIBLE);
+            ivLeft.setVisibility(View.GONE);
+        } else {
+            tvLeft.setVisibility(View.GONE);
+            ivLeft.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * 文件选择
+     *
+     * @param bundle
+     */
+    private void onAppFile(Bundle bundle) {
+        ConstDataConfig.isSelectFile = true;
+        String fileType = bundle.getString("fileType");
+        if ("拍照".equals(fileType)) {
+            openCamera();
+        } else if ("相册".equals(fileType)) {
+            selectPhoto();
+        } else if ("文件".equals(fileType)) {
+            openFileManager();
+        }
+    }
 
     /**
      * WebView刷新
@@ -426,85 +441,52 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         }
     }
 
-    private void initNfc() {
-        fncObject = new FNCObject(getIntent(), MainActivity.this);
-        fncObject.setOnFNCintf(this);
-        fncObject.onResume();
-    }
 
-
-    // 发送消息,通知数据的改变
-    private NewsCenter.NewsListener listener = new NewsCenter.NewsListener() {
-
-        @Override
-        public void onStatus(int msgType, int what, Bundle value) {
-            Message msg = mHandler.obtainMessage();
-            msg.what = msgType;
-            msg.setData(value);
-            mHandler.sendMessage(msg);
-        }
-    };
-
-
-    private Handler mHandler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            Bundle bundle = msg.getData();
-            switch (msg.what) {
-                case 200:
-                    String name = bundle.getString("name");
-                    String url = bundle.getString("url");
-                    tvLeft.setText(name);
-                    tvLeft.setTag(url);
-                    if (!StringUtils.isNull(name) && !StringUtils.isNull(url)) {
-                        tvLeft.setVisibility(View.VISIBLE);
-                        ivLeft.setVisibility(View.GONE);
-                    } else {
-                        tvLeft.setVisibility(View.GONE);
-                        ivLeft.setVisibility(View.VISIBLE);
-                    }
-                    break;
-                case NewsCenter.MSG_APP_THEME_CHANGE:// 改变主题
-                    setTopTitleBg();
-                case NewsCenter.MSG_APP_SERVER_SAVE://服务器保存
-                    getMenuList(false);
-                    mWebView.loadUrl(AppConfig.newsUrl());
-                    break;
-                case NewsCenter.MSG_APP_QR_CODE://二维码扫描
-                    mAppQrCode = true;
-                    startQrCode();
-                    break;
-                case NewsCenter.MSG_APP_NFC://nfc
-                    initNfc();
-                    break;
-                case NewsCenter.MSG_APP_FILE:
-                    ConstDataConfig.isSelectFile = true;
-                    String fileType = bundle.getString("fileType");
-                    if ("拍照".equals(fileType)) {
-                        openCamera();
-                    } else if ("相册".equals(fileType)) {
-                        selectPhoto();
-                    } else if ("文件".equals(fileType)) {
-                        openFileManager();
-                    }
-                    break;
-                case NewsCenter.MSG_APP_DIALOG_DISMISS:
-                    selectFileError();
-                    break;
-                default:
-                    break;
-            }
-
-            return false;
-        }
-    });
-
+    /**
+     * 选择文件失败
+     */
     private void selectFileError() {
         if (!ConstDataConfig.isSelectFile) {
             mUploadCallbackAboveL.onReceiveValue(null);
             mUploadCallbackAboveL = null;
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (fncObject != null) {
+            fncObject.onResume();
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (fncObject != null) {
+            fncObject.onPause();
+        }
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (fncObject != null) {
+            fncObject.resolveIntent(intent);
+        }
+    }
+
+
+    // 发送消息,通知数据的改变
+    private NewsCenter.NewsListener listener = new NewsCenter.NewsListener() {
+        @Override
+        public void onStatus(int msgType, int what, Bundle value) {
+            myHandler.obtainMessage(msgType, value).sendToTarget();
+        }
+    };
 
 
     @Override
@@ -716,7 +698,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
     @Override
     public void onLoadNewWebView(boolean isLoad, Html5WebView html5WebView) {
         this.html5WebView = html5WebView;
-        html5WebView.getWebChromeClient().onProgressChanged(html5WebView,100);
+        html5WebView.getWebChromeClient().onProgressChanged(html5WebView, 100);
         html5WebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onCloseWindow(WebView window) {
@@ -750,6 +732,10 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
             mWebView = null;
         }
         NewsCenter.getInstance().detachListener(listener);
+        if (myHandler != null) {
+            myHandler.removeCallbacksAndMessages(null);
+            myHandler = null;
+        }
         super.onDestroy();
     }
 
@@ -769,10 +755,7 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
             Bundle bundle = new Bundle();
             bundle.putString("name", name);
             bundle.putString("url", url);
-            Message msg = mHandler.obtainMessage();
-            msg.what = 200;
-            msg.setData(bundle);
-            mHandler.sendMessage(msg);
+            myHandler.obtainMessage(NewsCenter.MSG_APP_TOP_LEFT, bundle).sendToTarget();
         }
 
         /**
@@ -794,6 +777,52 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
             initNfc();
         }
 
+    }
+
+
+    private static class MyHandler extends Handler {
+        private WeakReference<MainActivity> weakReference;
+
+        MyHandler(MainActivity activity) {
+            weakReference = new WeakReference<>(activity);
+
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            MainActivity activity = weakReference.get();
+            if (activity == null) {
+                return;
+            }
+            Bundle bundle = (Bundle) msg.obj;
+            switch (msg.what) {
+                case NewsCenter.MSG_APP_TOP_LEFT://左上角图标自定义
+                    activity.onSetTopLeft(bundle);
+                    break;
+                case NewsCenter.MSG_APP_THEME_CHANGE:// 改变主题
+                    activity.setTopTitleBg();
+                case NewsCenter.MSG_APP_SERVER_SAVE://服务器保存
+                    activity.getMenuList(false);
+                    activity.mWebView.loadUrl(AppConfig.newsUrl());
+                    break;
+                case NewsCenter.MSG_APP_QR_CODE://二维码扫描
+                    activity.mAppQrCode = true;
+                    activity.startQrCode();
+                    break;
+                case NewsCenter.MSG_APP_NFC://NFC
+                    activity.initNfc();
+                    break;
+                case NewsCenter.MSG_APP_FILE://文件选择
+                    activity.onAppFile(bundle);
+                    break;
+                case NewsCenter.MSG_APP_DIALOG_DISMISS:
+                    activity.selectFileError();
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
 }
