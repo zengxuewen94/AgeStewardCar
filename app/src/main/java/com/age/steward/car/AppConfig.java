@@ -4,6 +4,7 @@ package com.age.steward.car;
  */
 public class AppConfig {
 
+
 	private int deviceWidth = 0;
 	private int deviceHeight = 0;
 	//应用主地址
