@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -55,7 +57,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import com.hjq.permissions.OnPermission;
+import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
@@ -182,6 +184,15 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         getMenuList(mFirst);
         mFirst = false;
     }
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -368,30 +379,43 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
      * 跳转二维码扫描
      */
     private void startQrCode() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !XXPermissions.hasPermission(this, Permission.CAMERA)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !XXPermissions.isGranted(this, Permission.CAMERA)) {
             XXPermissions.with(this)
                     // 申请单个权限
                     .permission(Permission.CAMERA)
-                    .request(new OnPermission() {
-
+                    .request(new OnPermissionCallback() {
                         @Override
-                        public void hasPermission(List<String> granted, boolean all) {
-                            if (all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (allGranted) {
                                 Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
                                 startActivityForResult(intent, CaptureActivity.REQ_QR_CODE);
                             }
                         }
 
-                        @Override
-                        public void noPermission(List<String> denied, boolean never) {
-                            if (never) {
-                                Hint.showShort(MainActivity.this, "被永久拒绝授权，请手动授予相机权限");
-                                // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                                XXPermissions.startPermissionActivity(MainActivity.this, denied);
-                            } else {
-                                Hint.showShort(MainActivity.this, "获取相机权限失败");
-                            }
-                        }
+//                        @Override
+//                        public void hasPermission(List<String> granted, boolean all) {
+//                            if (all) {
+//                                Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+//                                startActivityForResult(intent, CaptureActivity.REQ_QR_CODE);
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void noPermission(List<String> denied, boolean never) {
+//                            if (never) {
+//                                Hint.showShort(MainActivity.this, "被永久拒绝授权，请手动授予相机权限");
+//                                // 如果是被永久拒绝就跳转到应用权限系统设置页面
+//                                XXPermissions.startPermissionActivity(MainActivity.this, denied);
+//                            } else {
+//                                Hint.showShort(MainActivity.this, "获取相机权限失败");
+//                            }
+//                        }
+
+
+
+
+
+
                     });
         } else {
             Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
@@ -405,32 +429,19 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
      */
     private void startSelectFile() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && (!XXPermissions.hasPermission(this, Permission.CAMERA)
-                || !XXPermissions.hasPermission(this, Permission.Group.STORAGE))) {
+                && (!XXPermissions.isGranted(this, Permission.CAMERA)
+                || !XXPermissions.isGranted(this, Permission.Group.STORAGE))) {
             XXPermissions.with(this)
                     // 申请单个权限
                     .permission(Permission.CAMERA)
                     .permission(Permission.Group.STORAGE)
-                    .request(new OnPermission() {
-
+                    .request(new OnPermissionCallback() {
                         @Override
-                        public void hasPermission(List<String> granted, boolean all) {
-                            if (all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (allGranted) {
                                 Bundle bundle = new Bundle();
                                 bundle.putSerializable("meMenuList", (Serializable) ConstDataConfig.initFile());
                                 DialogBuilderUtil.showMenuChildDialog(MainActivity.this, 1, mWebView, bundle);
-                            }
-                        }
-
-                        @Override
-                        public void noPermission(List<String> denied, boolean never) {
-                            if (never) {
-                                Hint.showShort(MainActivity.this, "被永久拒绝授权，请手动授予相机权限");
-                                // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                                XXPermissions.startPermissionActivity(MainActivity.this, denied);
-                            } else {
-                                Hint.showShort(MainActivity.this, "获取部分权限失败");
-                                selectFileError();
                             }
                         }
                     });

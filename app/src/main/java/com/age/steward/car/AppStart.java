@@ -11,6 +11,7 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ImageView;
 import com.age.steward.car.ui.MainActivity;
+import com.age.steward.car.ui.MapActivity;
 import com.age.steward.car.utils.StatusBarUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -78,7 +79,7 @@ public class AppStart extends Activity {
      * 跳转到...
      */
     private void redirectTo() {
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
         finish();
     }

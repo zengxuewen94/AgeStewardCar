@@ -4,6 +4,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +23,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.age.steward.car.utils.overlayutil.DrivingRouteOverlay;
 import com.android.library.zxing.activity.CaptureActivity;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
@@ -55,16 +58,20 @@ import com.baidu.mapapi.search.poi.PoiSearch;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
 import com.baidu.mapapi.search.route.IndoorRouteResult;
+import com.baidu.mapapi.search.route.IntegralRouteResult;
 import com.baidu.mapapi.search.route.MassTransitRouteResult;
 import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
 import com.baidu.mapapi.search.route.RoutePlanSearch;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.utils.DistanceUtil;
-import com.hjq.permissions.OnPermission;
+
+import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import com.age.steward.car.R;
@@ -115,23 +122,12 @@ public class MapActivity extends RxAppCompatActivity {
     }
 
     private void requestPermissions(){
-        XXPermissions.with(this).permission(Permission.Group.LOCATION).request(new OnPermission() {
-            @Override
-            public void hasPermission(List<String> granted, boolean all) {
-                if (all){
-                    initLocationOption();
-                }
-            }
 
+        LocationClient.setAgreePrivacy(true);
+        XXPermissions.with(this).permission(Permission.ACCESS_FINE_LOCATION).request(new OnPermissionCallback() {
             @Override
-            public void noPermission(List<String> denied, boolean never) {
-                if (never) {
-                    Hint.showShort(MapActivity.this, "被永久拒绝授权，请手动授予位置权限");
-                    // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                    XXPermissions.startPermissionActivity(MapActivity.this, denied);
-                } else {
-                    Hint.showShort(MapActivity.this, "获取位置权限失败");
-                }
+            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                initLocationOption();
             }
         });
     }
@@ -142,6 +138,7 @@ public class MapActivity extends RxAppCompatActivity {
         mBaiduMap = mMapView.getMap();
         //开启交通图
         mBaiduMap.setTrafficEnabled(true);
+        mBaiduMap.setCompassEnable(true);
         mBaiduMap.setMyLocationEnabled(true);
         mPoiSearch = PoiSearch.newInstance();
         mPoiSearch.setOnGetPoiSearchResultListener(listener);
@@ -171,7 +168,36 @@ public class MapActivity extends RxAppCompatActivity {
             }
         });
 
+        /**
+         * 添加地图缩放状态变化监听，当手动放大或缩小地图时，拿到缩放后的比例，然后获取到下次定位，
+         *  给地图重新设置缩放比例，否则地图会重新回到默认的mCurrentZoom缩放比例
+         */
+        mBaiduMap.setOnMapStatusChangeListener(new BaiduMap.OnMapStatusChangeListener() {
+
+            @Override
+            public void onMapStatusChangeStart(MapStatus arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onMapStatusChangeStart(MapStatus mapStatus, int i) {
+
+            }
+
+            @Override
+            public void onMapStatusChangeFinish(MapStatus arg0) {
+                Log.d("地图缩放级别:",arg0.zoom+"----");
+            }
+
+            @Override
+            public void onMapStatusChange(MapStatus arg0) {
+
+            }
+        });
+
     }
+
     //设置地图缩放级别
     private void setLevel() {
         //起点： latitude纬度           longitude经度
@@ -180,6 +206,7 @@ public class MapActivity extends RxAppCompatActivity {
             distanceStr = "距离约" + distance + "米";
             int level = getLevel(distance);
             //设置缩放级别
+            Log.d("驾驶路线","直线距离:"+distance);
             mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(new MapStatus.Builder().zoom(levelArr[level]).build()));
         }
     }
@@ -217,22 +244,11 @@ public class MapActivity extends RxAppCompatActivity {
 
 
 
-    OnGetRoutePlanResultListener routePlanResultListener = new OnGetRoutePlanResultListener() {
+    OnGetRoutePlanResultListener routePlanResultListener =new OnGetRoutePlanResultListener() {
         @Override
         public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
-            //创建WalkingRouteOverlay实例
-            WalkingRouteOverlay overlay = new WalkingRouteOverlay(mBaiduMap);
-            if (walkingRouteResult.getRouteLines().size() > 0) {
-                //获取路径规划数据,(以返回的第一条数据为例)
-                //为WalkingRouteOverlay实例设置路径数据
-                overlay.setData(walkingRouteResult.getRouteLines().get(0));
-                //在地图上绘制WalkingRouteOverlay
-                overlay.addToMap();
-                overlay.zoomToSpan();
-                setLevel();
-            }
-        }
 
+        }
 
         @Override
         public void onGetTransitRouteResult(TransitRouteResult transitRouteResult) {
@@ -246,7 +262,17 @@ public class MapActivity extends RxAppCompatActivity {
 
         @Override
         public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
-
+            //创建WalkingRouteOverlay实例
+            DrivingRouteOverlay overlay = new DrivingRouteOverlay(mBaiduMap);
+            if (drivingRouteResult.getRouteLines().size() > 0) {
+                //获取路径规划数据,(以返回的第一条数据为例)
+                //为WalkingRouteOverlay实例设置路径数据
+                overlay.setData(drivingRouteResult.getRouteLines().get(0));
+                //在地图上绘制WalkingRouteOverlay
+                overlay.addToMap();
+                overlay.zoomToSpan();
+                setLevel();
+            }
         }
 
         @Override
@@ -258,6 +284,11 @@ public class MapActivity extends RxAppCompatActivity {
         public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
 
         }
+
+        @Override
+        public void onGetIntegralRouteResult(IntegralRouteResult integralRouteResult) {
+
+        }
     };
 
     /**
@@ -265,7 +296,11 @@ public class MapActivity extends RxAppCompatActivity {
      */
     private void initLocationOption() {
         //定位服务的客户端。宿主程序在客户端声明此类，并调用，目前只支持在主线程中启动
-        mLocationClient = new LocationClient(getApplicationContext());
+        try {
+            mLocationClient = new LocationClient(getApplicationContext());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         //声明LocationClient类实例并配置定位参数
         LocationClientOption locationOption = new LocationClientOption();
         MyLocationListener myLocationListener = new MyLocationListener();
@@ -276,7 +311,7 @@ public class MapActivity extends RxAppCompatActivity {
         //可选，默认gcj02，设置返回的定位结果坐标系，如果配合百度地图使用，建议设置为bd09ll;
         locationOption.setCoorType("bd09ll");
         //可选，默认0，即仅定位一次，设置发起连续定位请求的间隔需要大于等于1000ms才是有效的
-        locationOption.setScanSpan(0);
+        locationOption.setScanSpan(1000);
         //可选，设置是否需要地址信息，默认不需要
         locationOption.setIsNeedAddress(true);
         //可选，设置是否需要地址描述
@@ -294,7 +329,7 @@ public class MapActivity extends RxAppCompatActivity {
         //可选，默认false，设置是否收集CRASH信息，默认收集
         locationOption.SetIgnoreCacheException(false);
         //可选，默认false，设置是否开启Gps定位
-        locationOption.setOpenGps(true);
+        locationOption.setOpenGnss(true);
         //可选，默认false，设置定位时是否需要海拔信息，默认不需要，除基础定位版本都可用
         locationOption.setIsNeedAltitude(false);
         //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者，该模式下开发者无需再关心定位间隔是多少，定位SDK本身发现位置变化就会及时回调给开发者
@@ -307,8 +342,25 @@ public class MapActivity extends RxAppCompatActivity {
         MyLocationConfiguration.LocationMode mCurrentMode = MyLocationConfiguration.LocationMode.FOLLOWING;
         BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.ic_clear);
         mBaiduMap.setMyLocationConfiguration(new MyLocationConfiguration(mCurrentMode, true, bitmapDescriptor));
+
         //开始定位
         mLocationClient.start();
+
+
+        searchLng();
+
+    }
+    private void searchLng(){
+        Geocoder geocoder=new Geocoder(getApplicationContext());
+        try {
+            List<Address>  list=geocoder.getFromLocationName("靖远县北寺门",1);
+            if (null!=list&&!list.isEmpty()){
+
+                Log.d("获取地点经纬度：",list.get(0).getLatitude()+"--"+list.get(0).getLongitude());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -334,7 +386,6 @@ public class MapActivity extends RxAppCompatActivity {
             if (location == null || mMapView == null) {
                 return;
             }
-            Log.e("locData", latitude + "--" + longitude + "--" + radius + "--" + coorType + "--" + errorCode + "--" + location.getCity() + location.getAddrStr());
             city = location.getCity();
             MyLocationData locData = new MyLocationData.Builder()
                     .accuracy(location.getRadius())
