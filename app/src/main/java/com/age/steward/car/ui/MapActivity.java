@@ -1,12 +1,10 @@
 package com.age.steward.car.ui;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,12 +17,15 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.age.steward.car.R;
+import com.age.steward.car.adapter.PoiSearchAdapter;
+import com.age.steward.car.utils.Hint;
+import com.age.steward.car.utils.ItemClickSupport;
+import com.age.steward.car.utils.StringUtils;
 import com.age.steward.car.utils.overlayutil.DrivingRouteOverlay;
-import com.android.library.zxing.activity.CaptureActivity;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
@@ -34,23 +35,26 @@ import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.CircleOptions;
 import com.baidu.mapapi.map.MapStatus;
-
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.map.PolygonOptions;
+import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
-
+import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.search.core.PoiDetailInfo;
 import com.baidu.mapapi.search.core.PoiInfo;
 import com.baidu.mapapi.search.core.SearchResult;
+import com.baidu.mapapi.search.district.DistrictResult;
+import com.baidu.mapapi.search.district.DistrictSearch;
+import com.baidu.mapapi.search.district.DistrictSearchOption;
+import com.baidu.mapapi.search.district.OnGetDistricSearchResultListener;
 import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
 import com.baidu.mapapi.search.poi.PoiCitySearchOption;
 import com.baidu.mapapi.search.poi.PoiDetailResult;
-
 import com.baidu.mapapi.search.poi.PoiDetailSearchResult;
 import com.baidu.mapapi.search.poi.PoiIndoorResult;
 import com.baidu.mapapi.search.poi.PoiResult;
@@ -65,7 +69,6 @@ import com.baidu.mapapi.search.route.RoutePlanSearch;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.utils.DistanceUtil;
-
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
@@ -74,15 +77,10 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import com.age.steward.car.R;
-import com.age.steward.car.adapter.PoiSearchAdapter;
-import com.age.steward.car.expand.ConstDataConfig;
-import com.age.steward.car.utils.Hint;
-import com.age.steward.car.utils.ItemClickSupport;
-import com.age.steward.car.utils.StringUtils;
-import com.age.steward.car.utils.overlayutil.WalkingRouteOverlay;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.hutool.core.collection.CollectionUtil;
 
 
 public class MapActivity extends RxAppCompatActivity {
@@ -111,6 +109,9 @@ public class MapActivity extends RxAppCompatActivity {
     private String distanceStr;
     private int[] distanceArr = new int[]{20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 25000, 50000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
     private int[] levelArr = new int[]{21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3};
+    private DistrictSearch mDistrictSearch;
+    private List<String> areaList=new ArrayList<>();
+    private int areaItem=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,7 +122,7 @@ public class MapActivity extends RxAppCompatActivity {
 
     }
 
-    private void requestPermissions(){
+    private void requestPermissions() {
 
         LocationClient.setAgreePrivacy(true);
         XXPermissions.with(this).permission(Permission.ACCESS_FINE_LOCATION).request(new OnPermissionCallback() {
@@ -154,15 +155,15 @@ public class MapActivity extends RxAppCompatActivity {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                PoiInfo poiInfo=list.get(position);
-                ll_end= new LatLng(poiInfo.location.latitude, poiInfo.location.longitude);
+                PoiInfo poiInfo = list.get(position);
+                ll_end = new LatLng(poiInfo.location.latitude, poiInfo.location.longitude);
                 //routePlan(ll_st,ll_end);
-                Bundle bundle=new Bundle();
-                bundle.putParcelable("ll_st",ll_st);
-                bundle.putParcelable("ll_end",ll_end);
-                Intent intent=new Intent(MapActivity.this,WalkingActivity.class);
-                bundle.putString("endAddress",poiInfo.name);
-                intent.putExtra("data",bundle);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("ll_st", ll_st);
+                bundle.putParcelable("ll_end", ll_end);
+                Intent intent = new Intent(MapActivity.this, WalkingActivity.class);
+                bundle.putString("endAddress", poiInfo.name);
+                intent.putExtra("data", bundle);
                 startActivity(intent);
                 //mPoiSearch.searchPoiDetail(new PoiDetailSearchOption().poiUids(poiInfo.uid));
             }
@@ -187,7 +188,7 @@ public class MapActivity extends RxAppCompatActivity {
 
             @Override
             public void onMapStatusChangeFinish(MapStatus arg0) {
-                Log.d("地图缩放级别:",arg0.zoom+"----");
+                Log.d("地图缩放级别:", arg0.zoom + "----");
             }
 
             @Override
@@ -201,15 +202,16 @@ public class MapActivity extends RxAppCompatActivity {
     //设置地图缩放级别
     private void setLevel() {
         //起点： latitude纬度           longitude经度
-        if (ll_st != null ) {
+        if (ll_st != null) {
             int distance = (int) DistanceUtil.getDistance(ll_st, ll_end);
             distanceStr = "距离约" + distance + "米";
             int level = getLevel(distance);
             //设置缩放级别
-            Log.d("驾驶路线","直线距离:"+distance);
+            Log.d("驾驶路线", "直线距离:" + distance);
             mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(new MapStatus.Builder().zoom(levelArr[level]).build()));
         }
     }
+
     //根据距离计算出差值数组,并排序（取正数）
     private int getLevel(int distance) {
         int level = -1;
@@ -232,7 +234,7 @@ public class MapActivity extends RxAppCompatActivity {
          *  keyword 检索内容关键字
          *  pageNum 分页页码
          */
-        if (StringUtils.isNull(keyword)){
+        if (StringUtils.isNull(keyword)) {
             return;
         }
         mPoiSearch.searchInCity(new PoiCitySearchOption()
@@ -243,8 +245,7 @@ public class MapActivity extends RxAppCompatActivity {
     }
 
 
-
-    OnGetRoutePlanResultListener routePlanResultListener =new OnGetRoutePlanResultListener() {
+    OnGetRoutePlanResultListener routePlanResultListener = new OnGetRoutePlanResultListener() {
         @Override
         public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
 
@@ -345,18 +346,26 @@ public class MapActivity extends RxAppCompatActivity {
 
         //开始定位
         mLocationClient.start();
-
-
         searchLng();
 
-    }
-    private void searchLng(){
-        Geocoder geocoder=new Geocoder(getApplicationContext());
-        try {
-            List<Address>  list=geocoder.getFromLocationName("靖远县北寺门",1);
-            if (null!=list&&!list.isEmpty()){
+        areaList.add("北京");
+        areaList.add("上海");
+        areaList.add("湖南");
+        areaList.add("江苏");
 
-                Log.d("获取地点经纬度：",list.get(0).getLatitude()+"--"+list.get(0).getLongitude());
+        DistrictSearch districtSearch = DistrictSearch.newInstance();
+        districtSearch.setOnDistrictSearchListener(searchResultListener);
+        districtSearch.searchDistrict(new DistrictSearchOption().cityName(areaList.get(areaItem)));
+
+    }
+
+    private void searchLng() {
+        Geocoder geocoder = new Geocoder(getApplicationContext());
+        try {
+            List<Address> list = geocoder.getFromLocationName("靖远县北寺门", 1);
+            if (null != list && !list.isEmpty()) {
+
+                Log.d("获取地点经纬度：", list.get(0).getLatitude() + "--" + list.get(0).getLongitude());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -400,7 +409,7 @@ public class MapActivity extends RxAppCompatActivity {
             OverlayOptions ooCircle = new CircleOptions().fillColor(0x384d73b3)
                     .center(ll_st).stroke(new Stroke(3, 0x784d73b3))
                     .radius(50);
-            mBaiduMap.clear();
+            //mBaiduMap.clear();
             mBaiduMap.addOverlay(ooCircle);
             if (isFirst) {
                 isFirst = false;
@@ -434,15 +443,15 @@ public class MapActivity extends RxAppCompatActivity {
 
         @Override
         public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
-            if (poiDetailSearchResult!=null||poiDetailSearchResult.error!=SearchResult.ERRORNO.RESULT_NOT_FOUND){
+            if (poiDetailSearchResult != null || poiDetailSearchResult.error != SearchResult.ERRORNO.RESULT_NOT_FOUND) {
                 Hint.showShort(MapActivity.this, "未找到结果");
                 return;
             }
-            List<PoiDetailInfo> detailInfoList=poiDetailSearchResult.getPoiDetailInfoList();
-            if (detailInfoList!=null&&!detailInfoList.isEmpty()){
-                PoiDetailInfo detailInfo=detailInfoList.get(0);
+            List<PoiDetailInfo> detailInfoList = poiDetailSearchResult.getPoiDetailInfoList();
+            if (detailInfoList != null && !detailInfoList.isEmpty()) {
+                PoiDetailInfo detailInfo = detailInfoList.get(0);
             }
-            Log.e("DetailResult", detailInfoList.size()+"");
+            Log.e("DetailResult", detailInfoList.size() + "");
         }
 
         @Override
@@ -522,7 +531,7 @@ public class MapActivity extends RxAppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                if (linearLayout.getVisibility()==View.VISIBLE) {
+                if (linearLayout.getVisibility() == View.VISIBLE) {
                     linearLayout.setVisibility(View.GONE);
                     return true;
                 } else {
@@ -540,6 +549,7 @@ public class MapActivity extends RxAppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
+
     @Override
     protected void onDestroy() {
         mLocationClient.stop();
@@ -548,4 +558,50 @@ public class MapActivity extends RxAppCompatActivity {
         mMapView.onDestroy();
         super.onDestroy();
     }
+
+
+    OnGetDistricSearchResultListener searchResultListener = new OnGetDistricSearchResultListener() {
+        @Override
+        public void onGetDistrictResult(DistrictResult districtResult) {
+            Log.d("TAG", "区域搜索:" + districtResult.error + "--" + districtResult.cityName);
+            if (null != districtResult && districtResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                areaItem+=1;
+                if (areaItem<=(areaList.size()-1)){
+                    mDistrictSearch.searchDistrict(new DistrictSearchOption().cityName(areaList.get(areaItem)));
+                }
+                //对检索所得行政区划边界数据进行处理
+                //mBaiduMap.clear();
+                //获取边界坐标点，并展示
+                List<List<LatLng>> polyLines = districtResult.getPolylines();
+                if (CollectionUtil.isEmpty(polyLines)){
+                    return;
+                }
+                //需要在子线程中绘制
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        for (List<LatLng> polyline : polyLines) {
+                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                            OverlayOptions ooPolyline11 = new PolylineOptions().width(10)
+                                    .points(polyline).dottedLine(true).color(Color.BLUE);
+                            mBaiduMap.addOverlay(ooPolyline11);
+                            OverlayOptions ooPolygon = new PolygonOptions().points(polyline)
+                                    .stroke(new Stroke(5, 0xAA00FF88)).fillColor(0xAAFFFF00);
+                            mBaiduMap.addOverlay(ooPolygon);
+                            for (LatLng latLng : polyline) {
+                                builder.include(latLng);
+                            }
+                            mBaiduMap.setMapStatus(MapStatusUpdateFactory
+                                    .newLatLngBounds(builder.build()));
+                        }
+
+
+                    }
+                }).start();
+            }else {
+                mDistrictSearch.searchDistrict(new DistrictSearchOption().cityName(areaList.get(areaItem)));
+            }
+        }
+    };
 }
