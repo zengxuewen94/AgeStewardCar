@@ -51,7 +51,8 @@
         android:usesCleartextTraffic="true">
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="e1HxZ6QGw5nI45nEavah1KHTrrQhohEf" />
+
+            android:value="" /><!-- 填写在百度地图开放平台申请的地图ak值 -->
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
